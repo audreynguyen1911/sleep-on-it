@@ -1,5 +1,5 @@
 // Sleep On It: offline support and wake-up notifications
-const CACHE = 'sleep-on-it-v9';
+const CACHE = 'sleep-on-it-v10';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
