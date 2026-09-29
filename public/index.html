@@ -89,7 +89,7 @@ button:focus-visible, summary:focus-visible, input:focus-visible, textarea:focus
 }
 .shelf{display:block;width:calc(100% + 30px);margin:-12px -15px 0;height:40px;position:relative;z-index:0}
 .empty{position:absolute;inset:auto 22px 44px;text-align:center;color:var(--soft);font-size:.95rem;line-height:1.4;margin:0}
-.more{position:absolute;top:10px;right:16px;font-size:.8rem;background:var(--panel);border-radius:999px;padding:2px 9px;color:var(--soft);z-index:6}
+.more{position:absolute;top:12px;left:16px;right:auto;font-size:.8rem;background:var(--panel);border-radius:999px;padding:2px 9px;color:var(--soft);z-index:6}
 
 .note{position:absolute;left:0;top:0;width:76px;height:76px;padding:0;border:0;background:none;cursor:pointer;will-change:transform;-webkit-tap-highlight-color:transparent}
 .art{display:block;width:100%;height:100%;overflow:visible}
@@ -140,7 +140,7 @@ ul{list-style:none;margin:0;padding:0}
 .card .mini{flex:none;width:36px;height:36px}
 .card .mini .art{width:36px;height:36px}
 .card .txt{flex:1;min-width:0}
-.name{display:block;overflow-wrap:anywhere}
+.name{display:block;overflow-wrap:break-word;word-break:normal}
 .meta{display:block;font-size:.85rem;color:var(--soft)}
 .small-btn{font:inherit;font-weight:600;padding:7px 14px;cursor:pointer;background:var(--mustard);color:#2A2320;box-shadow:2px 3px 0 var(--shadow)}
 .link{border:0;background:none;color:var(--soft);font:inherit;font-size:.85rem;cursor:pointer;text-decoration:underline;padding:4px}
@@ -200,6 +200,14 @@ select{font:inherit;color:var(--ink);background:var(--paper);border:2px solid va
 }
 
 /* ---- v2 layout ---- */
+.inline-rm{padding:0 0 0 8px;font-size:.8rem;vertical-align:baseline}
+#sleepBox{padding:2px 10px}
+#sleepBox .card{padding:10px 12px}
+.dec-title{margin:0 0 14px !important}
+@media (max-width:370px){ .btn{font-size:.95rem;padding:12px 12px} .actions{gap:8px} .dlg{padding:18px 16px 16px} .count{gap:6px} .pill{padding:4px 10px;font-size:.9rem} }
+header{min-width:0}
+header h1{min-width:0}
+@media (max-width:370px){ .icon-btn .btn-lbl{display:none} .icon-btn{padding:8px 10px} .icon-btn svg{width:20px;height:20px} h1{font-size:2.1rem} .zzz{width:40px;height:35px;margin-bottom:10px} }
 [hidden]{display:none !important}
 .small-btn,.link,.seg button,.pill{white-space:nowrap}
 .wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
@@ -267,6 +275,15 @@ input[type=url]{width:100%;font:inherit;color:var(--ink);background:var(--paper)
 .avatar{flex:none;width:40px;height:40px;border-radius:50%;border:2.5px solid var(--line);display:grid;place-items:center;font-family:"Caveat Brush","Mali",cursive;font-size:1.4rem}
 .chev{font-size:1.6rem;color:var(--soft);line-height:1}
 .wish-actions{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+.status{display:block;font-size:.85rem;color:var(--soft);margin-top:2px}
+.status.mine{color:var(--leaf);font-weight:600}
+.status .link{font-weight:400;padding:0 0 0 6px;vertical-align:baseline}
+.card .txt{flex:1 1 auto;min-width:0}
+.card .small-btn{flex:none}
+.card.wish .small-btn{display:inline-block;margin-top:8px}
+.card.wish{align-items:flex-start}
+.card.wish .mini{margin-top:4px}
+.card a.meta{display:inline-block;overflow-wrap:anywhere}
 .claimed{font-size:.82rem;color:var(--soft);text-align:right;line-height:1.3}
 .claimed.mine{color:var(--leaf);font-weight:600}
 .card.taken .name{color:var(--soft)}
@@ -307,7 +324,7 @@ a.meta{color:var(--cobalt);text-decoration:underline}
       <path class="z z2" d="M24 20 L39 20 L24 38 L40 38" stroke="var(--mustard)" stroke-width="4.5"/>
       <path class="z z3" d="M44 2 L62 2 L44 23 L62 23" stroke="var(--pink)" stroke-width="5"/>
     </g></svg></h1>
-    <button class="icon-btn sketch" id="settingsBtn" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>Settings</button>
+    <button class="icon-btn sketch" id="settingsBtn" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg><span class="btn-lbl">Settings</span></button>
   </header>
 
   <main id="jarView">
@@ -449,7 +466,8 @@ a.meta{color:var(--cobalt);text-decoration:underline}
 
 <dialog id="decideDlg" aria-labelledby="decTitle">
   <div class="dlg">
-    <div class="dlg-head"><div class="decide-top" style="margin:0"><div class="big awake" id="decFace"></div><h3 id="decTitle"></h3></div><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-head" style="margin-bottom:6px"><div class="decide-top" style="margin:0"><div class="big awake" id="decFace"></div></div><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <h3 id="decTitle" class="dec-title"></h3>
     <div id="decSaid"></div>
     <div class="stack">
       <button class="btn btn-green sketch" type="button" id="letGoBtn">Let it go</button>
@@ -663,7 +681,7 @@ function syncSound(){ document.querySelectorAll('[data-snd]').forEach(b => b.set
 document.querySelectorAll('[data-snd]').forEach(b => b.onclick = () => { state.sound = b.dataset.snd==='1'; save(); syncSound(); if(state.sound) sfx.tap(); });
 
 let tt;
-function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2800); }
+function toast(msg){ const t=$('toast'); const openDlg=[...document.querySelectorAll('dialog[open]')].pop(); const home=openDlg||document.body; if(t.parentNode!==home) home.appendChild(t); t.textContent=msg; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2800); }
 
 
 /* ---- physics ---- */
@@ -851,8 +869,8 @@ function renderLists(){
     <li class="card">
       <span class="mini">${art(it.cat,it.color,it.wish)}</span>
       <span class="txt"><span class="name">${esc(it.text)}${it.wish?'<span class="wish-tag">wish</span>':''}</span>
-      <span class="meta"><span data-left="${it.id}">${fmtLeft(it.due-Date.now())}</span>${it.price?`, ${money(it.price)}`:''}</span></span>
-      <button class="link" type="button" data-remove="${it.id}" aria-label="Remove ${esc(it.text)}">Remove</button>
+      <span class="meta"><span data-left="${it.id}">${fmtLeft(it.due-Date.now())}</span>${it.price?`, ${money(it.price)}`:''}
+      <button class="link inline-rm" type="button" data-remove="${it.id}" aria-label="Remove ${esc(it.text)}">Remove</button></span></span>
     </li>`).join('');
 
   $('nGone').textContent = gone.length;
@@ -1160,14 +1178,14 @@ function renderFriendJar(){
   const wishes = d.wishes;
   $('fjList').innerHTML = wishes.length ? `<ul>${wishes.map(w => {
     const mine = state.myClaims[`${code}:${w.id}`];
-    const act = mine ? `<span class="claimed mine">You're getting this</span><button class="link" type="button" data-unclaim="${esc(w.id)}">Undo</button>`
-      : w.claimed ? `<span class="claimed">Already bought by a friend</span>`
-      : `<button class="small-btn sketch" type="button" data-claim="${esc(w.id)}">I'll get this</button>`;
+    const status = mine ? `<span class="status mine">You're getting this <button class="link" type="button" data-unclaim="${esc(w.id)}">Undo</button></span>`
+      : w.claimed ? `<span class="status">Already bought by a friend</span>` : '';
+    const btn = (!mine && !w.claimed) ? `<button class="small-btn sketch" type="button" data-claim="${esc(w.id)}">I'll get this</button>` : '';
     return `<li class="card wish${w.claimed && !mine ? ' taken' : ''}">
       <span class="mini">${w.claimed ? giftArt(w.color) : art(w.cat, w.color, true)}</span>
       <span class="txt"><span class="name">${esc(w.text)}</span>
-      ${w.link ? `<a class="meta" href="${esc(w.link)}" target="_blank" rel="noopener">View on ${esc(hostOf(w.link) || 'the shop')}</a>` : ''}</span>
-      <span class="wish-actions">${act}</span></li>`;
+      ${w.link ? `<a class="meta" href="${esc(w.link)}" target="_blank" rel="noopener">View on ${esc(hostOf(w.link) || 'the shop')}</a>` : ''}
+      ${status}${btn}</span></li>`;
   }).join('')}</ul>` : `<p class="list-empty">No wishes in their jar right now.</p>`;
 }
 document.addEventListener('click', async e => {
