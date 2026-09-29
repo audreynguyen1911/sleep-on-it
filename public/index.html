@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F5EDDF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1F2340" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Sleep On It">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/apple-touch-icon-167.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152.png">
+<title>Sleep On It</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5EDDF; --ink:#2A2320; --soft:#6E6253; --line:#2A2320;
+  --panel:#FFF9EF; --title:#E4412F; --blob:#F9C9CF; --blob2:#FBE1A6; --star-op:0; --lamp:transparent;
+  --glass:rgba(142,197,232,.26); --shine:#FFFFFF;
+  --tomato:#E4412F; --cobalt:#2F5BD3; --mustard:#F2B632; --pink:#F4A6B8; --leaf:#2E9E5B; --sky:#8EC5E8;
+  --fly:#FFD85C; --glow:rgba(255,205,80,.55);
+  --shadow:#2A2320;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1E2140; --ink:#F3EADB; --soft:#B4AFCB; --line:#E8DDCB;
+    --panel:#2A2E55; --title:#F7B6C4; --blob:#2A2E57; --blob2:#F6E3AE;
+    --glass:rgba(180,205,255,.07); --shine:#CFE0FF; --star-op:1; --lamp:rgba(246,215,140,.16);
+    --shadow:#0E1024;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1E2140; --ink:#F3EADB; --soft:#B4AFCB; --line:#E8DDCB;
+  --panel:#2A2E55; --title:#F7B6C4; --blob:#2A2E57; --blob2:#F6E3AE;
+  --glass:rgba(180,205,255,.07); --shine:#CFE0FF; --star-op:1; --lamp:rgba(246,215,140,.16);
+  --shadow:#0E1024;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;min-height:100%;background:var(--paper);color:var(--ink);
+  font-family:"Mali","Comic Neue","Chalkboard SE",ui-rounded,system-ui,sans-serif;
+  font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;position:relative;
+}
+body::before{ /* paper grain */
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.09;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.2 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+}
+.wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:22px 20px 60px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{display:flex;align-items:flex-end;gap:4px;font-family:"Caveat Brush","Mali",cursive;font-weight:400;font-size:clamp(2.3rem, 11vw, 3.1rem);line-height:1;margin:0;color:var(--title);transform:rotate(-2deg);white-space:nowrap}
+@media (max-width:380px){.zzz{width:44px;height:38px}}
+.zzz{flex:none;margin-bottom:14px;overflow:visible}
+.z{animation:zfloat 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.z2{animation-delay:.4s}.z3{animation-delay:.8s}
+@keyframes zfloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-6deg)}}
+.sound-row{display:flex;align-items:center;gap:12px;margin-top:14px}
+.sound-row small{color:var(--soft);font-size:.8rem;line-height:1.3}
+.seg{flex:none;display:flex;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:.85rem;border:0;background:none;color:var(--ink);padding:6px 12px;cursor:pointer}
+.seg button+button{border-left:2px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--mustard);color:#2A2320;font-weight:600}
+.stars{fill:var(--blob2);opacity:var(--star-op)}
+.moonbite{opacity:var(--star-op)}
+.notify{margin-top:18px}
+.notify .small-btn.off{background:var(--panel);color:var(--ink)}
+.sketch{border:2.5px solid var(--line);border-radius:255px 15px 225px 15px/15px 225px 15px 255px}
+.icon-btn{flex:none;background:var(--panel);color:var(--ink);padding:5px 13px;font:inherit;font-size:.85rem;cursor:pointer}
+button:focus-visible, summary:focus-visible, input:focus-visible, textarea:focus-visible, label.chip:focus-within{outline:3px solid var(--mustard);outline-offset:3px}
+
+/* ---------- scene ---------- */
+.stage{position:relative;width:300px;height:404px;margin:14px auto 0}
+.stage.shaking{animation:wiggle .6s ease-in-out}
+@keyframes wiggle{0%,100%{transform:rotate(0)}15%{transform:rotate(-4deg) translateX(-4px)}35%{transform:rotate(4deg) translateX(4px)}55%{transform:rotate(-3deg)}75%{transform:rotate(2deg)}}
+.stage > svg{position:absolute;inset:0;width:300px;height:410px;overflow:visible}
+.front{pointer-events:none;z-index:4}
+.interior{
+  position:absolute;left:32px;top:106px;width:236px;height:290px;overflow:hidden;z-index:2;
+  border-radius:26px 26px 42px 42px / 22px 22px 40px 40px;
+}
+.shelf{display:block;width:calc(100% + 30px);margin:-12px -15px 0;height:40px;position:relative;z-index:0}
+.empty{position:absolute;inset:auto 22px 44px;text-align:center;color:var(--soft);font-size:.95rem;line-height:1.4;margin:0}
+.more{position:absolute;top:10px;right:16px;font-size:.8rem;background:var(--panel);border-radius:999px;padding:2px 9px;color:var(--soft);z-index:6}
+
+.note{position:absolute;left:0;top:0;width:76px;height:76px;padding:0;border:0;background:none;cursor:pointer;will-change:transform;-webkit-tap-highlight-color:transparent}
+.art{display:block;width:100%;height:100%;overflow:visible}
+.ol{stroke:var(--line);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.open{display:none}
+.awake .open{display:inline} .awake .sleepy{display:none}
+.note.awake .art{animation:hop 1.3s ease-in-out infinite;filter:drop-shadow(0 0 5px var(--glow)) drop-shadow(0 0 2px var(--mustard))}
+@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-8px) rotate(-6deg)}60%{transform:translateY(-8px) rotate(6deg)}}
+.note.leaving-go .art{animation:dissolve .9s ease-in forwards}
+@keyframes dissolve{to{transform:translateY(-70px) scale(.12);opacity:0;filter:brightness(1.8)}}
+.note.leaving-keep .art{animation:lift 1s ease-in forwards}
+@keyframes lift{to{transform:translateY(-340px) rotate(20deg);opacity:0}}
+
+.fly{
+  position:absolute;width:8px;height:8px;border-radius:50%;background:var(--fly);z-index:1;pointer-events:none;
+  box-shadow:0 0 8px 3px var(--fly), 0 0 22px 7px var(--glow);
+  animation:drift var(--d) ease-in-out infinite alternate, blink var(--b) ease-in-out infinite;
+}
+.fly.new{animation:born 1.2s ease-out, drift var(--d) ease-in-out 1.2s infinite alternate, blink var(--b) ease-in-out 1.2s infinite}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(var(--dx),var(--dy))}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes born{from{transform:scale(3);opacity:0}to{transform:scale(1);opacity:1}}
+
+.tagline{font-family:"Caveat Brush","Mali",cursive;font-size:1.65rem;line-height:1.15;text-align:center;margin:18px auto 4px;max-width:22ch}
+.count{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:6px 0 20px}
+.pill{display:inline-flex;align-items:baseline;gap:6px;padding:4px 14px;background:var(--panel);font-size:.95rem}
+.pill b{font-family:"Caveat Brush","Mali",cursive;font-weight:400;font-size:1.35rem;line-height:1}
+.pill.saved{background:var(--leaf);color:#FFF7EC}
+.actions{display:flex;gap:10px}
+.btn{
+  font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer;padding:13px 18px;color:var(--ink);
+  box-shadow:3px 4px 0 var(--shadow);transition:transform .08s, box-shadow .08s;
+}
+.btn:active{transform:translate(2px,3px);box-shadow:1px 1px 0 var(--shadow)}
+.btn-red{background:var(--tomato);color:#FFF7EC;flex:1}
+.btn-yellow{background:var(--mustard);color:#2A2320}
+.btn-green{background:var(--leaf);color:#FFF7EC}
+.btn-blue{background:var(--sky);color:#2A2320}
+.btn-plain{background:var(--panel)}
+
+section{margin-top:30px}
+h2{font-family:"Caveat Brush","Mali",cursive;font-weight:400;font-size:1.6rem;margin:0 0 8px;line-height:1.1}
+ul{list-style:none;margin:0;padding:0}
+.card{
+  display:flex;align-items:center;gap:12px;background:var(--panel);padding:10px 14px;margin-bottom:10px;
+  border:2.5px solid var(--line);border-radius:18px 30px 16px 26px / 26px 16px 30px 18px;
+}
+.card .mini{flex:none;width:36px;height:36px}
+.card .mini .art{width:36px;height:36px}
+.card .txt{flex:1;min-width:0}
+.name{display:block;overflow-wrap:anywhere}
+.meta{display:block;font-size:.85rem;color:var(--soft)}
+.small-btn{font:inherit;font-weight:600;padding:7px 14px;cursor:pointer;background:var(--mustard);color:#2A2320;box-shadow:2px 3px 0 var(--shadow)}
+.link{border:0;background:none;color:var(--soft);font:inherit;font-size:.85rem;cursor:pointer;text-decoration:underline;padding:4px}
+details{margin-top:14px;background:var(--panel);padding:2px 14px;border:2.5px solid var(--line);border-radius:18px 30px 16px 26px / 26px 16px 30px 18px}
+summary{cursor:pointer;padding:10px 0;font-weight:600}
+details .card{background:var(--paper)}
+details .plain li{padding:7px 0;border-top:1.5px dashed color-mix(in srgb, var(--line) 30%, transparent);display:flex;justify-content:space-between;gap:10px}
+details .plain li span:last-child{color:var(--soft);font-size:.85rem;flex:none}
+details ul{padding-bottom:10px}
+.foot{margin-top:34px;text-align:center;color:var(--soft);font-size:.85rem}
+
+dialog{
+  border:2.5px solid var(--line);padding:0;background:var(--panel);color:var(--ink);
+  border-radius:28px 18px 30px 20px / 20px 30px 18px 28px;
+  width:min(440px, calc(100vw - 24px));max-height:calc(100% - 24px);overflow:auto;
+  box-shadow:5px 6px 0 var(--shadow);
+}
+dialog::backdrop{background:rgba(30,24,40,.45)}
+.dlg{padding:22px 22px 20px}
+.dlg h3{font-family:"Caveat Brush","Mali",cursive;font-weight:400;margin:0 0 14px;font-size:1.9rem;line-height:1.05}
+.field{display:block;margin-bottom:16px}
+.field > span{display:block;font-weight:600;margin-bottom:6px}
+.field small{font-weight:400;color:var(--soft)}
+input[type=text], input[type=number], textarea{
+  width:100%;font:inherit;color:var(--ink);background:var(--paper);border:2px solid var(--line);
+  border-radius:14px 20px 12px 18px / 18px 12px 20px 14px;padding:10px 12px;
+}
+textarea{resize:vertical;min-height:64px}
+.money{position:relative}
+.money{display:flex;gap:8px}
+.money input{flex:1;min-width:0}
+select{font:inherit;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:14px 20px 12px 18px / 18px 12px 20px 14px;padding:10px 8px;max-width:48%}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.chip span{display:inline-flex;align-items:center;gap:6px;padding:5px 12px 5px 8px;font-size:.92rem;cursor:pointer;background:var(--paper);
+  border:2px solid color-mix(in srgb, var(--line) 35%, transparent);border-radius:255px 15px 225px 15px/15px 225px 15px 255px}
+.chip span .art{width:24px;height:24px;flex:none}
+.chip.plain span{padding:6px 13px}
+.chip input:checked + span{border-color:var(--line);background:var(--mustard);color:#2A2320}
+.dlg-actions{display:flex;gap:10px;margin-top:6px}
+.said{background:var(--paper);border-radius:14px 20px 12px 18px / 18px 12px 20px 14px;padding:12px 14px;margin:0 0 14px}
+.said b{display:block;font-size:.85rem;color:var(--soft);font-weight:500}
+.decide-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.decide-top .big .art{width:72px;height:72px;animation:hop 1.3s ease-in-out infinite}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+.toast{
+  position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);
+  background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:999px;font-size:.95rem;
+  opacity:0;transition:.3s;pointer-events:none;max-width:calc(100vw - 32px);text-align:center;z-index:50;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion: reduce){
+  .z, .stage.shaking, .note.awake .art, .fly, .fly.new, .decide-top .big .art{animation:none}
+  .note.leaving-go .art, .note.leaving-keep .art{animation:none;opacity:0}
+}
+
+/* ---- v2 layout ---- */
+[hidden]{display:none !important}
+.small-btn,.link,.seg button,.pill{white-space:nowrap}
+.wrap{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+header{margin-bottom:4px}
+.icon-btn{display:inline-flex;align-items:center;gap:6px}
+.icon-btn svg{width:18px;height:18px}
+.stage{margin-top:22px}
+.count{margin:8px 0 20px}
+button.pill{font:inherit;color:var(--ink);cursor:pointer}
+.pill.gifts{background:var(--pink);color:#2A2320}
+.pill.saved{color:#FFF7EC}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;gap:10px;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));
+  background:color-mix(in srgb, var(--paper) 97%, transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border-top:2px solid color-mix(in srgb, var(--line) 18%, transparent)}
+.tabbar button{flex:1;max-width:210px;display:flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-weight:600;
+  padding:9px 12px;background:none;color:var(--soft);border:2.5px solid transparent;cursor:pointer;
+  border-radius:255px 15px 225px 15px/15px 225px 15px 255px}
+.tabbar button[aria-current="page"]{color:var(--ink);background:var(--panel);border-color:var(--line)}
+.tabbar svg{width:22px;height:22px;flex:none}
+.toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+.dlg-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.dlg-head h3{margin:0}
+.x{flex:none;width:38px;height:38px;border:2px solid var(--line);border-radius:50%;background:var(--paper);color:var(--ink);font:inherit;font-size:1rem;line-height:1;cursor:pointer}
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--paper);padding:12px 14px;margin-bottom:16px;cursor:pointer;
+  border-radius:14px 20px 12px 18px / 18px 12px 20px 14px}
+.switch-row b{display:block;font-weight:600}
+.switch-row small{display:block;color:var(--soft);font-size:.85rem;line-height:1.35}
+.switch{appearance:none;-webkit-appearance:none;flex:none;width:54px;height:32px;margin:0;border:2.5px solid var(--line);border-radius:999px;background:var(--panel);position:relative;cursor:pointer;transition:background .2s}
+.switch::before{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:var(--line);transition:transform .2s}
+.switch:checked{background:var(--pink)}
+.switch:checked::before{transform:translateX(22px);background:#2A2320}
+input[type=url]{width:100%;font:inherit;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:14px 20px 12px 18px / 18px 12px 20px 14px;padding:10px 12px}
+.hint{display:block;color:var(--soft);font-size:.82rem;margin-top:5px}
+.err{display:block;color:var(--tomato);font-size:.85rem;margin-top:5px;font-weight:600}
+.field.invalid input{border-color:var(--tomato)}
+.money{display:block;position:relative}
+.money .cur{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--soft);pointer-events:none}
+.custom-dur{display:flex;gap:8px;margin-top:10px}
+.custom-dur input{width:96px;flex:none}
+.custom-dur select{max-width:none;flex:1}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-top:1.5px dashed color-mix(in srgb, var(--line) 30%, transparent)}
+.set-row:first-of-type{border-top:0;padding-top:4px}
+.set-row .lbl{min-width:0}
+.set-row .lbl b{display:block;font-weight:600}
+.set-row small{display:block;color:var(--soft);font-size:.82rem;line-height:1.35}
+.set-row select{max-width:55%;min-width:120px}
+.danger{color:var(--tomato)}
+.fine{color:var(--soft);font-size:.8rem;line-height:1.4;margin:14px 0 0}
+.tabs{display:flex;margin-bottom:14px;width:100%}
+.tabs button{flex:1}
+.list-empty{color:var(--soft);text-align:center;padding:18px 8px;margin:0}
+.sub{color:var(--soft);font-size:.92rem;margin:0 0 12px}
+.block{background:var(--panel);border:2.5px solid var(--line);border-radius:18px 30px 16px 26px / 26px 16px 30px 18px;padding:14px 16px;margin-top:18px}
+.block h2{margin:0 0 4px}
+.block .field{margin:12px 0 0}
+.code-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+.code-btns{display:flex;gap:8px}
+.code{font-family:"Caveat Brush","Mali",cursive;font-size:2.1rem;line-height:1.1;letter-spacing:.03em;margin-right:auto}
+.small-btn.alt{background:var(--sky)}
+.code-add{display:flex;gap:8px;margin-top:8px}
+.code-add input{flex:1;min-width:0;text-transform:uppercase}
+.code-add .btn{padding:10px 18px}
+.friend{width:100%;text-align:left;font:inherit;color:var(--ink);cursor:pointer}
+.avatar{flex:none;width:40px;height:40px;border-radius:50%;border:2.5px solid var(--line);display:grid;place-items:center;font-family:"Caveat Brush","Mali",cursive;font-size:1.4rem}
+.chev{font-size:1.6rem;color:var(--soft);line-height:1}
+.wish-actions{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+.claimed{font-size:.82rem;color:var(--soft);text-align:right;line-height:1.3}
+.claimed.mine{color:var(--leaf);font-weight:600}
+.card.taken .name{color:var(--soft)}
+a.meta{color:var(--cobalt);text-decoration:underline}
+:root[data-theme="dark"] a.meta{color:var(--sky)}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) a.meta{color:var(--sky)} }
+.wish-tag{display:inline-block;font-size:.72rem;font-weight:600;background:var(--pink);color:#2A2320;border-radius:999px;padding:0 8px;margin-left:6px;vertical-align:2px}
+.nudge{margin-top:18px;flex-direction:column;align-items:stretch;gap:8px}
+.nudge .btns{display:flex;gap:10px;align-items:center;justify-content:flex-end}
+#friendsView h1{font-size:clamp(2rem,9vw,2.6rem)}
+.intro{color:var(--soft);margin:10px 0 0}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="rough" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="4" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="2.6"/>
+    </filter>
+    <filter id="roughBig" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="9" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="4"/>
+    </filter>
+    <radialGradient id="lampGlow"><stop offset="0" style="stop-color:var(--lamp)"/><stop offset="1" style="stop-color:var(--lamp);stop-opacity:0"/></radialGradient>
+    <pattern id="ging" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-4)">
+      <rect width="16" height="16" fill="#FFF7EC"/>
+      <rect width="8" height="16" fill="#2F5BD3" opacity=".55"/>
+      <rect width="16" height="8" fill="#2F5BD3" opacity=".55"/>
+    </pattern>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header>
+    <h1>Sleep On It<svg class="zzz" viewBox="0 0 64 56" width="58" height="50" aria-hidden="true"><g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path class="z z1" d="M4 38 L16 38 L4 52 L17 52" stroke="var(--cobalt)" stroke-width="4"/>
+      <path class="z z2" d="M24 20 L39 20 L24 38 L40 38" stroke="var(--mustard)" stroke-width="4.5"/>
+      <path class="z z3" d="M44 2 L62 2 L44 23 L62 23" stroke="var(--pink)" stroke-width="5"/>
+    </g></svg></h1>
+    <button class="icon-btn sketch" id="settingsBtn" type="button" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>Settings</button>
+  </header>
+
+  <main id="jarView">
+  <div class="stage" id="stage" aria-label="Your jar">
+    <svg viewBox="0 0 300 410" aria-hidden="true">
+      <ellipse cx="150" cy="250" rx="175" ry="190" fill="url(#lampGlow)"/>
+      <g class="stars" filter="url(#rough)">
+        <path d="M24 150 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z"/>
+        <path d="M284 170 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z"/>
+        <path d="M6 250 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z"/>
+        <path d="M290 330 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5z"/>
+        <circle cx="128" cy="12" r="2"/><circle cx="276" cy="250" r="1.8"/><circle cx="22" cy="170" r="1.6"/><circle cx="262" cy="130" r="1.5"/>
+      </g>
+      <path filter="url(#roughBig)" fill="var(--blob)" d="M150 70 C236 64 292 128 290 222 C288 318 226 388 146 384 C62 380 8 318 12 224 C16 130 72 76 150 70 Z"/>
+      <g transform="translate(-192 -38)"><path filter="url(#roughBig)" fill="var(--blob2)" opacity=".8" d="M232 40 C256 38 272 56 270 78 C268 100 250 112 230 108 C210 104 198 88 202 68 C205 50 216 41 232 40 Z"/>
+      <circle class="moonbite" cx="250" cy="62" r="27" fill="var(--paper)"/></g>
+      <g filter="url(#rough)">
+        <path fill="var(--glass)" d="M62 106 L238 106 C262 106 270 116 270 134 L270 360 C270 390 252 398 222 398 L78 398 C48 398 30 390 30 360 L30 134 C30 116 40 106 62 106 Z"/>
+        <path fill="var(--glass)" d="M64 86 L236 86 L238 108 L62 108 Z"/>
+      </g>
+    </svg>
+    <div class="interior" id="jar">
+      <p class="empty" id="empty">Empty for now. Next time something tugs at you, put it in here.</p>
+    </div>
+    <svg class="front" viewBox="0 0 300 410" aria-hidden="true">
+      <g filter="url(#rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path class="ol" style="stroke-width:3.2" d="M62 106 L238 106 C262 106 270 116 270 134 L270 360 C270 390 252 398 222 398 L78 398 C48 398 30 390 30 360 L30 134 C30 116 40 106 62 106 Z"/>
+        <path class="ol" style="stroke-width:1.2;opacity:.5" transform="translate(2 1.5)" d="M64 107 L236 105 C260 107 268 118 269 136 L271 358 C269 388 250 396 220 397 L80 399 C50 397 31 388 31 358 L29 136 C31 118 42 107 64 107"/>
+        <path class="ol" style="stroke-width:3" d="M66 88 Q64 97 62 106 M234 88 Q236 97 238 106"/>
+        <path stroke="var(--shine)" stroke-width="8" opacity=".85" d="M50 150 Q45 230 50 312"/>
+        <path stroke="var(--shine)" stroke-width="8" opacity=".85" d="M50 332 L50 344"/>
+        <path stroke="var(--shine)" stroke-width="4" opacity=".55" d="M252 150 Q256 175 252 200"/>
+        <!-- cloth lid -->
+        <path fill="url(#ging)" class="ol" d="M52 88 C44 58 90 32 150 32 C210 32 256 58 248 88 Q240 97 232 90 Q224 99 214 91 Q206 100 196 92 Q188 101 178 93 Q168 101 158 93 Q150 101 142 93 Q132 101 122 93 Q112 100 104 92 Q94 100 86 91 Q76 99 68 90 Q60 97 52 88 Z"/>
+        <path class="ol" style="stroke-width:8" d="M60 80 Q150 92 240 80"/>
+        <path stroke="var(--mustard)" stroke-width="4.5" d="M60 80 Q150 92 240 80"/>
+        <path class="ol" style="stroke-width:7" d="M198 86 C184 70 176 90 198 86 C212 70 222 90 198 86 M198 86 L191 101 M198 86 L207 100"/>
+        <path stroke="var(--mustard)" stroke-width="3.8" d="M198 86 C184 70 176 90 198 86 C212 70 222 90 198 86 M198 86 L191 101 M198 86 L207 100"/>
+        <path class="ol" style="stroke-width:1.5" d="M204 96 L214 118"/>
+        <g transform="translate(208 114) rotate(16)">
+          <path fill="var(--pink)" class="ol" d="M0 4 L9 -1 L46 0 L45 24 L9 25 L0 20 Z"/>
+          <circle cx="7" cy="12" r="2.2" fill="var(--paper)" class="ol" style="stroke-width:1.4"/>
+          <text x="15" y="18" font-family="Caveat Brush, cursive" font-size="15" fill="#2A2320" stroke="none">zzz</text>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <svg class="shelf" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+    <g filter="url(#rough)">
+      <path d="M4 8 Q200 2 396 7 L394 31 Q200 37 6 32 Z" fill="var(--tomato)" class="ol"/>
+      <path d="M10 17 Q200 13 390 16" stroke="#2A2320" stroke-width="1.5" opacity=".25" fill="none"/>
+      <path d="M40 24 L90 24 M150 26 L230 25 M290 23 L340 24" stroke="#FFF7EC" stroke-width="2" opacity=".35" fill="none" stroke-linecap="round"/>
+    </g>
+  </svg>
+
+  <p class="tagline">Not every want needs a yes.</p>
+  <div class="count">
+    <button class="pill sketch" type="button" data-hist="gone"><b id="nGone">0</b> let go</button>
+    <button class="pill saved sketch" type="button" data-hist="gone"><b id="nSaved">$0</b> saved</button>
+    <button class="pill gifts sketch" type="button" data-hist="gifts"><b id="nGifts">0</b> <span id="giftWord">gifts</span></button>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-red sketch" id="addBtn" type="button">Pop an urge in</button>
+    <button class="btn btn-yellow sketch" id="shakeBtn" type="button">Shake it</button>
+  </div>
+
+  <div class="card nudge" id="nudge" hidden>
+    <span class="txt"><span class="name">Want a nudge when something wakes up?</span><span class="meta">You'll also hear when a friend gets you a gift.</span></span>
+    <span class="btns"><button class="link" type="button" id="nudgeLater">Not now</button><button class="small-btn sketch" type="button" id="nudgeOn">Turn on</button></span>
+  </div>
+
+  <section id="readySec" hidden>
+    <h2>Awake and ready to decide</h2>
+    <div id="readyList"></div>
+  </section>
+
+  <details id="sleepBox" hidden><summary id="sleepSum"></summary><ul id="sleepList"></ul></details>
+  </main>
+
+  <main id="friendsView" hidden>
+    <p class="intro">Friends can peek at your wishes and secretly get one for you. You'll never find out who.</p>
+    <div id="friendsOff" hidden class="block"><p class="list-empty">Friends work in the Sleep On It app on your phone.</p></div>
+    <div id="friendsOn">
+      <section class="block">
+        <h2>Your friend code</h2>
+        <div class="code-row"><span class="code" id="myCode">…</span>
+          <span class="code-btns"><button class="small-btn sketch" type="button" id="copyCode">Copy</button>
+          <button class="small-btn alt sketch" type="button" id="shareCode">Share</button></span></div>
+        <label class="field"><span>Your name <small>what friends see</small></span>
+          <input type="text" id="myName" maxlength="30" placeholder="Audrey" autocomplete="given-name"></label>
+      </section>
+      <section class="block">
+        <h2>Add a friend</h2>
+        <form class="code-add" id="addFriend">
+          <input type="text" id="friendCode" placeholder="JAR-7K2PQ" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Friend code">
+          <button class="btn btn-red sketch" type="submit">Add</button>
+        </form>
+      </section>
+      <section>
+        <h2>Friends' wish jars</h2>
+        <div id="friendList"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<nav class="tabbar" aria-label="Sections">
+  <button type="button" data-tab="jar" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10v3H7z"/><path d="M8 6c-2 1-3 2-3 4v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-8c0-2-1-3-3-4"/></svg>My jar</button>
+  <button type="button" data-tab="friends"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="8.5" cy="8" r="3.2"/><circle cx="16.5" cy="9" r="2.6"/><path d="M2.5 20c.6-3.5 3-5.5 6-5.5s5.4 2 6 5.5M14.5 14.8c.6-.2 1.3-.3 2-.3 2.4 0 4.3 1.7 4.9 4.8"/></svg>Friends</button>
+</nav>
+
+<dialog id="addDlg" aria-labelledby="addTitle">
+  <form class="dlg" id="addForm" novalidate>
+    <div class="dlg-head"><h3 id="addTitle">What's tugging at you?</h3><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <label class="field"><span>The thing</span>
+      <input type="text" id="fText" maxlength="80" placeholder="Those green boots" required autocomplete="off">
+    </label>
+    <div class="field"><span>What kind</span><div class="chips" id="catChips"></div></div>
+    <label class="switch-row" for="fWish"><span><b>Make this a wish</b><small>Friends can see it and secretly buy it for you.</small></span>
+      <input type="checkbox" class="switch" id="fWish"></label>
+    <label class="field" id="linkField" hidden><span>Link</span>
+      <input type="url" id="fLink" placeholder="shop.com/green-boots" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <small class="err" id="linkErr" hidden>Add a link so friends know exactly which one to get.</small>
+    </label>
+    <label class="field"><span>Roughly how much? <small>optional</small></span>
+      <div class="money"><span class="cur" id="curSym">$</span><input type="number" id="fPrice" min="0" step="0.01" inputmode="decimal" placeholder="0"></div>
+    </label>
+    <div class="field"><span>Let it sleep for</span><div id="addDur"></div><small class="err" id="durErr" hidden>Pick how long it should sleep.</small></div>
+    <label class="field"><span>Why do you want it right now? <small>optional</small></span>
+      <textarea id="fWhy" maxlength="240" placeholder="Bad day, saw an ad, payday..."></textarea>
+    </label>
+    <div class="dlg-actions">
+      <button class="btn btn-plain sketch" type="button" data-close>Cancel</button>
+      <button class="btn btn-red sketch" type="submit">Pop it in</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="decideDlg" aria-labelledby="decTitle">
+  <div class="dlg">
+    <div class="dlg-head"><div class="decide-top" style="margin:0"><div class="big awake" id="decFace"></div><h3 id="decTitle"></h3></div><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <div id="decSaid"></div>
+    <div class="stack">
+      <button class="btn btn-green sketch" type="button" id="letGoBtn">Let it go</button>
+      <button class="btn btn-yellow sketch" type="button" id="keepBtn">I still want it</button>
+      <button class="btn btn-plain sketch" type="button" id="snoozeBtn">Sleep on it more</button>
+      <div id="moreBox" hidden>
+        <div class="field" style="margin-bottom:12px"><span>How much longer?</span><div id="moreDur"></div></div>
+        <button class="btn btn-blue sketch" type="button" id="moreConfirm" style="width:100%">Back to sleep</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="histDlg" aria-labelledby="histTitle">
+  <div class="dlg">
+    <div class="dlg-head"><h3 id="histTitle">Your jar's story</h3><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <div class="seg sketch tabs" role="group" aria-label="Show">
+      <button type="button" data-htab="gone">Let go</button><button type="button" data-htab="kept">Kept</button><button type="button" data-htab="gifts">Gifts</button>
+    </div>
+    <div id="histBody"></div>
+  </div>
+</dialog>
+
+<dialog id="friendDlg" aria-labelledby="fjTitle">
+  <div class="dlg">
+    <div class="dlg-head"><h3 id="fjTitle"></h3><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <p class="sub">Tap “I'll get this” so nobody else buys it too. They won't know it was you.</p>
+    <div id="fjList"></div>
+    <p class="fine" style="text-align:center"><button class="link danger" type="button" id="removeFriend">Remove friend</button></p>
+  </div>
+</dialog>
+
+<dialog id="settingsDlg" aria-labelledby="setTitle">
+  <div class="dlg">
+    <div class="dlg-head"><h3 id="setTitle">Settings</h3><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <div class="set-row"><span class="lbl"><b>Sound</b><small>Your phone needs to be off silent to hear the jar.</small></span>
+      <div class="seg sketch" role="group" aria-label="Sound"><button type="button" data-snd="1">On</button><button type="button" data-snd="0">Off</button></div></div>
+    <div class="set-row"><span class="lbl"><b>Currency</b></span><select id="setCur" aria-label="Currency"></select></div>
+    <div class="set-row"><span class="lbl"><b>Notifications</b><small id="notifyMeta"></small></span>
+      <button class="small-btn sketch" type="button" id="notifyBtn" hidden></button></div>
+    <div class="set-row"><span class="lbl"><b>Start over</b><small>Clears your jar and history. Friends stay.</small></span>
+      <button class="link danger" type="button" id="resetBtn">Empty the jar</button></div>
+    <p class="fine">Your jar lives on this phone. Your wishes, your name and your friend code are also saved on your Sleep On It site so friends can see them.</p>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+const KEY = 'sleep-on-it-v1';
+const DAY = 864e5;
+const PREVIEW = !!window.SOI_PREVIEW;
+const PALETTE = ['#E4412F','#2F5BD3','#F2B632','#F4A6B8','#2E9E5B','#8EC5E8','#F07F3C','#9B6FD0','#F7D8E0','#C9E07A'];
+const DARKS = new Set(['#E4412F','#2F5BD3','#2E9E5B','#9B6FD0','#F07F3C']);
+const CATS = {
+  buy:{label:'Something to buy', icon:'#E4412F'},
+  eat:{label:'Something to eat', icon:'#F4A6B8'},
+  msg:{label:'A message to send', icon:'#8EC5E8'},
+  big:{label:'A big decision', icon:'#F2B632'}
+};
+const PRESETS = [['1m','1 min (test)',60e3],['1d','1 day',DAY],['3d','3 days',3*DAY],['1w','1 week',7*DAY],['1mo','1 month',30*DAY],['custom','Custom',0]];
+const UNITS = [['minutes',6e4],['hours',36e5],['days',DAY],['weeks',7*DAY],['months',30*DAY]];
+const MAX_WAIT = 365*DAY;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let state = {items:[], sound:true, friends:[], me:null, myClaims:{}, notifyDismissed:false};
+try{ const s = localStorage.getItem(KEY); if(s){ const p = JSON.parse(s); if(p && Array.isArray(p.items)) state = Object.assign(state, p); } }catch(e){}
+state.friends = Array.isArray(state.friends) ? state.friends : [];
+state.myClaims = state.myClaims || {};
+function saveLocal(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function save(){ saveLocal(); schedulePush(); scheduleProfile(); }
+
+const $ = id => document.getElementById(id);
+const jar = $('jar');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hash = s => { let x=7; for(const c of s) x=(x*31 + c.charCodeAt(0))|0; return Math.abs(x); };
+const CURRENCIES = [['AUD','Australian dollar'],['USD','US dollar'],['VND','Vietnamese đồng'],['EUR','Euro'],['GBP','British pound'],['NZD','NZ dollar'],['SGD','Singapore dollar'],['CAD','Canadian dollar'],['JPY','Japanese yen'],['KRW','Korean won'],['CNY','Chinese yuan'],['HKD','Hong Kong dollar'],['THB','Thai baht'],['MYR','Malaysian ringgit'],['PHP','Philippine peso'],['IDR','Indonesian rupiah'],['INR','Indian rupee']];
+const REGION_CUR = {AU:'AUD',US:'USD',VN:'VND',GB:'GBP',NZ:'NZD',SG:'SGD',CA:'CAD',JP:'JPY',KR:'KRW',CN:'CNY',HK:'HKD',TH:'THB',MY:'MYR',PH:'PHP',ID:'IDR',IN:'INR',DE:'EUR',FR:'EUR',IT:'EUR',ES:'EUR',NL:'EUR',IE:'EUR'};
+function guessCur(){ try{ const r = new Intl.Locale(navigator.language).maximize().region; return REGION_CUR[r] || 'USD'; }catch(e){ return 'USD'; } }
+if(!state.currency) state.currency = guessCur();
+const money = n => { try{ return new Intl.NumberFormat(undefined,{style:'currency',currency:state.currency,minimumFractionDigits:0,maximumFractionDigits:['VND','JPY','KRW','IDR'].includes(state.currency)?0:2}).format(Number(n)); }catch(e){ return Number(n).toLocaleString(); } };
+const curSymbol = () => { try{ return new Intl.NumberFormat(undefined,{style:'currency',currency:state.currency}).formatToParts(0).find(p=>p.type==='currency').value; }catch(e){ return '$'; } };
+const isReady = it => it.status==='waiting' && Date.now() >= it.due;
+state.items.forEach(it => { if(!it.color) it.color = PALETTE[hash(it.id)%PALETTE.length]; });
+const rid = n => { const a = new Uint8Array(n); crypto.getRandomValues(a); return [...a].map(b => (b%36).toString(36)).join('') + [...a].map(b => (b>>2).toString(36)).join('').slice(0,n); };
+
+function fmtLeft(ms){
+  if(ms<=0) return 'awake now';
+  if(ms<60e3) return 'wakes in under a minute';
+  const m = Math.ceil(ms/60e3); if(m<60) return `wakes in ${m} min`;
+  const h = Math.round(ms/36e5); if(h<24) return `wakes in ${h} hour${h>1?'s':''}`;
+  const d = Math.round(ms/DAY);
+  if(d>=45){ const mo = Math.round(d/30); return `wakes in ${mo} months`; }
+  return `wakes in ${d} day${d>1?'s':''}`;
+}
+function fmtSlept(ms){
+  if(ms<36e5){ const m=Math.max(1,Math.round(ms/60e3)); return m===1?'a minute':`${m} minutes`; }
+  if(ms<DAY){ const h=Math.round(ms/36e5); return h===1?'an hour':`${h} hours`; }
+  const d=Math.round(ms/DAY);
+  if(d>=28 && d<=31) return 'a month';
+  if(d>=45) return `${Math.round(d/30)} months`;
+  if(d%7===0) return d===7 ? 'a week' : `${d/7} weeks`;
+  return d===1?'a day':`${d} days`;
+}
+const fmtDate = t => new Date(t).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+const hostOf = u => { try{ return new URL(u).hostname.replace(/^www\./,''); }catch(e){ return ''; } };
+const BOW = `<g transform="translate(14 -16) rotate(12)"><path class="ol" fill="#F4A6B8" style="stroke-width:1.6" d="M0 0 C-8 -9 -12 3 0 0 C8 -9 12 3 0 0 Z"/><circle cx="0" cy="0" r="2.2" fill="#E4412F" class="ol" style="stroke-width:1.2"/></g>`;
+
+/* ---- hand-drawn item art ---- */
+function face(x,y,fc){
+  return `<g transform="translate(${x} ${y})" fill="none" stroke="${fc}" stroke-width="1.9" stroke-linecap="round">
+    <g class="sleepy"><path d="M-7.5 -1 q2.6 2.6 5.2 0"/><path d="M2.3 -1 q2.6 2.6 5.2 0"/></g>
+    <g class="open"><circle cx="-4.8" cy="-1" r="1.9" fill="${fc}" stroke="none"/><circle cx="4.8" cy="-1" r="1.9" fill="${fc}" stroke="none"/></g>
+    <path d="M-2.2 3.6 q2.2 2.2 4.4 0"/>
+    <circle cx="-8.5" cy="3" r="2.3" fill="#F26F8E" stroke="none" opacity=".6"/><circle cx="8.5" cy="3" r="2.3" fill="#F26F8E" stroke="none" opacity=".6"/>
+  </g>`;
+}
+function starPath(){
+  let d=''; for(let i=0;i<10;i++){ const r = i%2 ? 9.5 : 21; const a = -Math.PI/2 + i*Math.PI/5; d += (i?'L':'M') + (Math.cos(a)*r).toFixed(1) + ' ' + (Math.sin(a)*r+2).toFixed(1) + ' '; }
+  return d + 'Z';
+}
+const STAR = starPath();
+function art(cat, color, wish){
+  const fc = DARKS.has(color) ? '#FFF7EC' : '#2A2320';
+  let g;
+  if(cat==='buy'){
+    g = `<path class="ol" fill="none" style="stroke-width:2.6" d="M-8 -6 C-8 -20 8 -20 8 -6"/>
+         <path class="ol" fill="${color}" d="M-16 -7 L16 -7 L18 18 Q0 21 -18 18 Z"/>
+         <path d="M-15 -1 L15 -1" stroke="#FFF7EC" stroke-width="1.6" opacity=".45"/>${face(0,7,fc)}`;
+  } else if(cat==='eat'){
+    const fc2 = DARKS.has(color) ? '#FFF7EC' : '#2A2320';
+    g = `<path class="ol" fill="#FBE9CF" d="M-14 3 L14 3 L10 20 L-10 20 Z"/>
+         <path d="M-6 5 L-4.5 19 M0 5 L0 19 M6 5 L4.5 19" stroke="#C99A6B" stroke-width="1.4"/>
+         <path class="ol" fill="${color}" d="M-18 4 C-21 -6 -12 -12 -6 -11 C-4 -18 6 -18 7 -11 C13 -12 21 -6 18 4 Q0 8 -18 4 Z"/>
+         <circle class="ol" cx="1" cy="-17" r="3.6" fill="#E4412F" style="stroke-width:1.6"/>
+         <path d="M-10 -5 l2 1 M9 -6 l-1.5 1.6 M3 -9 l2 .5" stroke="#FFF7EC" stroke-width="1.6" stroke-linecap="round"/>${face(0,-2,fc2)}`;
+  } else if(cat==='msg'){
+    g = `<path class="ol" fill="${color}" d="M-19 -12 Q-19 -18 -13 -18 L13 -18 Q19 -18 19 -12 L19 6 Q19 12 13 12 L-1 12 L-10 20 L-8 12 L-13 12 Q-19 12 -19 6 Z"/>${face(0,-3,fc)}`;
+  } else {
+    g = `<path class="ol" fill="${color}" d="${STAR}"/>${face(0,3,fc)}`;
+  }
+  return `<svg class="art" viewBox="-24 -24 48 48" aria-hidden="true"><g filter="url(#rough)">${g}${wish?BOW:''}</g></svg>`;
+}
+
+/* ---- sound ---- */
+let ac;
+try{ if(navigator.audioSession) navigator.audioSession.type = 'ambient'; }catch(e){}
+function getAC(){
+  if(!ac){ const C = window.AudioContext||window.webkitAudioContext; if(!C) return null; ac = new C(); }
+  return ac;
+}
+// Phones only allow sound after a tap, so wake the audio up on every touch.
+function unlockAudio(){
+  const c = getAC(); if(!c) return;
+  if(c.state !== 'running'){ c.resume().catch(()=>{}); }
+  try{ const b = c.createBuffer(1,1,22050), src = c.createBufferSource(); src.buffer=b; src.connect(c.destination); src.start(0); }catch(e){}
+}
+['pointerdown','touchstart','touchend','click','keydown'].forEach(ev => document.addEventListener(ev, unlockAudio, {capture:true, passive:true}));
+document.addEventListener('visibilitychange', () => { if(!document.hidden && ac && ac.state!=='running') ac.resume().catch(()=>{}); });
+/* whimsical sound engine: fairy-dust twinkles + music-box lullaby */
+let bus=null;
+function getBus(c){
+  if(bus) return bus;
+  const master=c.createGain(); master.gain.value=.9; master.connect(c.destination);
+  const delay=c.createDelay(1); delay.delayTime.value=.14;
+  const fb=c.createGain(); fb.gain.value=.32;
+  const tone=c.createBiquadFilter(); tone.type='lowpass'; tone.frequency.value=5200;
+  const wet=c.createGain(); wet.gain.value=.35;
+  delay.connect(tone); tone.connect(fb); fb.connect(delay); tone.connect(wet); wet.connect(master);
+  bus={master, send:delay};
+  return bus;
+}
+const SPARK=[1046.5,1174.7,1318.5,1568,1760,2093,2349.3,2637,3136];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function voice(freq, when, dur, vol, type='sine', sendAmt=.6){
+  if(!state.sound) return;
+  const c=getAC(); if(!c) return;
+  if(c.state!=='running') c.resume().catch(()=>{});
+  const {master, send}=getBus(c);
+  const t=c.currentTime+.01+when;
+  try{
+    const o=c.createOscillator(), g=c.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq,t); o.detune.setValueAtTime((Math.random()-.5)*14,t);
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g); g.connect(master);
+    const sg=c.createGain(); sg.gain.value=sendAmt; g.connect(sg); sg.connect(send);
+    o.start(t); o.stop(t+dur+.05);
+  }catch(e){}
+}
+function musicBox(freq, when, vol=.16){
+  voice(freq, when, 1.4, vol, 'sine', .5);
+  voice(freq*2, when, .5, vol*.35, 'sine', .3);
+  voice(freq*3.01, when, .18, vol*.15, 'triangle', .2);
+}
+function twinkle(n, spread, vol){
+  for(let i=0;i<n;i++) voice(pick(SPARK)*(Math.random()<.3?2:1), Math.random()*spread, .25+Math.random()*.25, vol*(.6+Math.random()*.4), 'sine', .8);
+}
+const sfx={
+  land(v=4){ twinkle(2+Math.floor(Math.random()*3), .12, Math.min(.07, .02+v*.008)); },
+  shake(){ twinkle(16, .75, .06); voice(784,0,.9,.05,'triangle',.9); },
+  wake(){ // a sleepy three-note lullaby yawn, then a sprinkle
+    musicBox(1046.5,0); musicBox(880,.32); musicBox(698.5,.64,.18); twinkle(5,.4,.04);
+  },
+  letGo(){ [1046.5,1318.5,1568,2093,2637].forEach((f,i)=>voice(f,i*.07,.7,.09,'sine',.9)); setTimeout(()=>twinkle(10,.6,.05),380); },
+  keep(){ musicBox(784,0); musicBox(1046.5,.16,.18); twinkle(4,.3,.04); },
+  shh(){ musicBox(659.3,0,.1); musicBox(587.3,.18,.08); },
+  tap(){ twinkle(4,.15,.06); }
+};
+function syncSound(){ document.querySelectorAll('[data-snd]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.snd==='1')===!!state.sound))); }
+document.querySelectorAll('[data-snd]').forEach(b => b.onclick = () => { state.sound = b.dataset.snd==='1'; save(); syncSound(); if(state.sound) sfx.tap(); });
+
+let tt;
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2800); }
+
+
+/* ---- physics ---- */
+const W=236, H=290, CR=42, G=0.42;
+const bodies = new Map();
+let running=false, calm=0, lastClink=0;
+function constrain(b){
+  const r=b.r;
+  if(b.x<r){ b.x=r; if(b.vx<0) b.vx*=-0.3; }
+  if(b.x>W-r){ b.x=W-r; if(b.vx>0) b.vx*=-0.3; }
+  if(b.y>H-r){ b.y=H-r; if(b.vy>0){ if(b.vy>3) clink(b.vy); b.vy*=-0.22; } b.vx*=0.9; b.av = b.vx*3.5; }
+  if(b.y>H-CR){
+    const cx = b.x<CR ? CR : (b.x>W-CR ? W-CR : null);
+    if(cx!==null){
+      const cy=H-CR, dx=b.x-cx, dy=b.y-cy, d=Math.hypot(dx,dy), lim=CR-r;
+      if(d>lim && d>0){ const nx=dx/d, ny=dy/d; b.x=cx+nx*lim; b.y=cy+ny*lim; const vn=b.vx*nx+b.vy*ny; if(vn>0){ b.vx-=1.25*vn*nx; b.vy-=1.25*vn*ny; } }
+    }
+  }
+}
+function clink(v){ const now=performance.now(); if(now-lastClink>110){ lastClink=now; sfx.land(v); } }
+function step(){
+  const arr=[...bodies.values()];
+  for(const b of arr){ b.vy+=G; b.vx*=0.995; b.vy*=0.995; b.x+=b.vx; b.y+=b.vy; b.a+=b.av; b.av*=0.94; }
+  for(let k=0;k<4;k++){
+    for(let i=0;i<arr.length;i++) for(let j=i+1;j<arr.length;j++){
+      const a=arr[i], b=arr[j]; const dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy), min=a.r+b.r-5;
+      if(d<min && d>0.001){
+        const nx=dx/d, ny=dy/d, ov=(min-d)/2;
+        a.x-=nx*ov; a.y-=ny*ov; b.x+=nx*ov; b.y+=ny*ov;
+        const rv=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;
+        if(rv<0){ const jj=-(1.15)*rv/2; a.vx-=jj*nx; a.vy-=jj*ny; b.vx+=jj*nx; b.vy+=jj*ny; if(-rv>3.5) clink(-rv); }
+        const tx=-ny, ty=nx, rt=(b.vx-a.vx)*tx+(b.vy-a.vy)*ty;
+        a.av-=rt*0.6; b.av+=rt*0.6;
+      }
+    }
+    for(const b of arr) constrain(b);
+  }
+  return arr.reduce((m,b)=>Math.max(m, Math.abs(b.vx)+Math.abs(b.vy)), 0);
+}
+function paint(){ for(const b of bodies.values()) b.el.style.transform = `translate(${(b.x-38).toFixed(1)}px, ${(b.y-38).toFixed(1)}px) rotate(${b.a.toFixed(1)}deg)`; }
+function kick(){
+  if(reduce){ const s=state.sound; state.sound=false; for(let i=0;i<600;i++) step(); state.sound=s; paint(); return; }
+  calm=0; if(!running){ running=true; requestAnimationFrame(loop); }
+}
+function loop(){
+  const e = Math.max(step(), step());
+  paint();
+  calm = e<0.15 ? calm+1 : 0;
+  if(calm>45){ running=false; return; }
+  requestAnimationFrame(loop);
+}
+
+/* ---- jar rendering ---- */
+const MAX_SHOWN = 16;
+const flyEls = new Map();
+let firstPaint = true;
+
+function renderJar(){
+  const inJar = state.items.filter(i=>i.status==='waiting').sort((a,b)=>a.created-b.created);
+  const shown = inJar.slice(-MAX_SHOWN);
+  const shownIds = new Set(shown.map(i=>i.id));
+  $('empty').hidden = inJar.length>0 || state.items.some(i=>i.status==='released');
+
+  let more = jar.querySelector('.more');
+  if(inJar.length > MAX_SHOWN){
+    if(!more){ more=document.createElement('span'); more.className='more'; jar.appendChild(more); }
+    more.textContent = `+${inJar.length-MAX_SHOWN} more`;
+  } else if(more) more.remove();
+
+  let added=false;
+  shown.forEach((it,i) => {
+    let b = bodies.get(it.id);
+    if(!b){
+      const h = hash(it.id);
+      const el = document.createElement('button');
+      el.type='button'; el.className='note'; el.innerHTML = art(it.cat, it.color, it.wish);
+      el.addEventListener('click', () => tapNote(it.id));
+      jar.appendChild(el);
+      b = { el, r: 30 + (h%3), x: 40 + (h % (W-80)), y: firstPaint ? -60 - i*70 : -30, vx: ((h>>3)%5)-2, vy: firstPaint?0:2, a: (h%60)-30, av: 0 };
+      bodies.set(it.id, b); added=true;
+    }
+    const awake = isReady(it);
+    b.el.classList.toggle('awake', awake);
+    b.el.setAttribute('aria-label', `${it.text}, ${awake ? 'awake, tap to decide' : fmtLeft(it.due-Date.now())}`);
+  });
+
+  for(const [id,b] of bodies){
+    if(!shownIds.has(id)){
+      bodies.delete(id);
+      const it = state.items.find(i=>i.id===id);
+      if(it && (it.status==='released' || it.status==='kept' || it.status==='gifted')){
+        b.el.classList.add(it.status==='kept' ? 'leaving-keep' : 'leaving-go');
+        setTimeout(()=>b.el.remove(), 1000);
+      } else b.el.remove();
+      added=true;
+    }
+  }
+
+  if(firstPaint){
+    const s=state.sound; state.sound=false; for(let i=0;i<900;i++) step(); state.sound=s; paint();
+  } else if(added) kick();
+
+  const gone = state.items.filter(i=>i.status==='released').slice(-40);
+  const goneIds = new Set(gone.map(i=>i.id));
+  gone.forEach(it => {
+    if(flyEls.has(it.id)) return;
+    const h = hash(it.id);
+    const f = document.createElement('span');
+    f.className = 'fly' + (firstPaint ? '' : ' new');
+    f.style.left = (12 + h%76) + '%';
+    f.style.top = (8 + (h>>3)%40) + '%';
+    f.style.setProperty('--d', (5 + h%6) + 's');
+    f.style.setProperty('--b', (2 + (h>>2)%3) + 's');
+    f.style.setProperty('--dx', ((h%40)-20) + 'px');
+    f.style.setProperty('--dy', (((h>>4)%30)-15) + 'px');
+    jar.appendChild(f); flyEls.set(it.id, f);
+  });
+  for(const [id,f] of flyEls){ if(!goneIds.has(id)){ f.remove(); flyEls.delete(id); } }
+}
+
+
+function giftArt(color){
+  const fc = DARKS.has(color) ? '#FFF7EC' : '#2A2320';
+  return `<svg class="art" viewBox="-24 -24 48 48" aria-hidden="true"><g filter="url(#rough)">
+    <rect class="ol" x="-16" y="-5" width="32" height="23" rx="3" fill="${color}"/>
+    <rect class="ol" x="-18" y="-11" width="36" height="8" rx="2" fill="${color}"/>
+    <rect x="-3" y="-11" width="6" height="29" fill="#FFF7EC" opacity=".85"/>
+    <path class="ol" fill="#F4A6B8" style="stroke-width:1.8" d="M0 -11 C-10 -23 -17 -11 0 -11 C10 -23 17 -11 0 -11 Z"/>
+    ${face(0,8,fc)}</g></svg>`;
+}
+sfx.gift = () => { [784,988,1175,1568].forEach((f,i)=>musicBox(f,i*.09,.14)); setTimeout(()=>twinkle(14,.8,.05),260); };
+
+/* ---- lists on the jar page ---- */
+function renderLists(){
+  const waiting = state.items.filter(i=>i.status==='waiting').sort((a,b)=>a.due-b.due);
+  const ready = waiting.filter(isReady);
+  const sleeping = waiting.filter(i=>!isReady(i));
+  const gone = state.items.filter(i=>i.status==='released');
+  const gifts = state.items.filter(i=>i.status==='gifted');
+  const saved = gone.reduce((s,i)=>s+(Number(i.price)||0),0);
+
+  $('readySec').hidden = !ready.length;
+  $('readyList').innerHTML = ready.map(it => `
+    <div class="card">
+      <span class="mini awake">${art(it.cat,it.color,it.wish)}</span>
+      <span class="txt"><span class="name">${esc(it.text)}${it.wish?'<span class="wish-tag">wish</span>':''}</span>
+      <span class="meta">Slept for ${fmtSlept(it.due-it.created)}${it.price?`, ${money(it.price)}`:''}</span></span>
+      <button class="small-btn sketch" type="button" data-decide="${it.id}">Decide</button>
+    </div>`).join('');
+
+  $('sleepBox').hidden = !sleeping.length;
+  $('sleepSum').textContent = `Peek at what's asleep (${sleeping.length})`;
+  $('sleepList').innerHTML = sleeping.map(it => `
+    <li class="card">
+      <span class="mini">${art(it.cat,it.color,it.wish)}</span>
+      <span class="txt"><span class="name">${esc(it.text)}${it.wish?'<span class="wish-tag">wish</span>':''}</span>
+      <span class="meta"><span data-left="${it.id}">${fmtLeft(it.due-Date.now())}</span>${it.price?`, ${money(it.price)}`:''}</span></span>
+      <button class="link" type="button" data-remove="${it.id}" aria-label="Remove ${esc(it.text)}">Remove</button>
+    </li>`).join('');
+
+  $('nGone').textContent = gone.length;
+  $('nSaved').textContent = money(saved);
+  $('nGifts').textContent = gifts.length;
+  $('giftWord').textContent = gifts.length===1 ? 'gift' : 'gifts';
+  if($('histDlg').open) renderHistory();
+}
+function render(){ renderJar(); renderLists(); firstPaint = false; }
+
+/* ---- duration picker (used when adding and when snoozing) ---- */
+function durPicker(host, name, def){
+  host.innerHTML = `<div class="chips">${PRESETS.map(([k,l])=>`<label class="chip plain"><input type="radio" name="${name}" value="${k}" ${k===def?'checked':''}><span>${l}</span></label>`).join('')}</div>
+    <div class="custom-dur" hidden>
+      <input type="number" min="1" max="999" step="1" value="2" inputmode="numeric" aria-label="How many">
+      <select aria-label="Unit">${UNITS.map(([u,ms])=>`<option value="${ms}" ${u==='days'?'selected':''}>${u}</option>`).join('')}</select>
+    </div>`;
+  const cd = host.querySelector('.custom-dur');
+  host.addEventListener('change', e => { if(e.target.name===name){ cd.hidden = e.target.value!=='custom'; if(!cd.hidden) cd.querySelector('input').focus(); } });
+  return {
+    get(){
+      const v = host.querySelector(`input[name="${name}"]:checked`).value;
+      if(v!=='custom') return PRESETS.find(p=>p[0]===v)[2];
+      const n = parseFloat(cd.querySelector('input').value), u = Number(cd.querySelector('select').value);
+      if(!(n>0)) return null;
+      return Math.min(n*u, MAX_WAIT);
+    },
+    reset(){ host.querySelector(`input[value="${def}"]`).checked = true; cd.hidden = true; cd.querySelector('input').value = 2; cd.querySelector('select').value = String(DAY); }
+  };
+}
+const addDur = durPicker($('addDur'), 'wait-add', '1d');
+const moreDur = durPicker($('moreDur'), 'wait-more', '1d');
+
+/* ---- interactions ---- */
+function tapNote(id){
+  const it = state.items.find(i=>i.id===id); if(!it) return;
+  if(isReady(it)) openDecide(id);
+  else { toast(`Shh, it's sleeping. It ${fmtLeft(it.due-Date.now())}.`); sfx.shh(); }
+}
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-close]'); if(c){ c.closest('dialog').close(); return; }
+  const d = e.target.closest('[data-decide]'); if(d) return openDecide(d.dataset.decide);
+  const r = e.target.closest('[data-remove]');
+  if(r){
+    const it = state.items.find(i=>i.id===r.dataset.remove); if(!it) return;
+    if(!confirm(`Take “${it.text}” out of the jar? It won't count as let go.`)) return;
+    state.items = state.items.filter(i=>i.id!==it.id); save(); render(); toast('Taken out of the jar.');
+  }
+  const h = e.target.closest('[data-hist]'); if(h) openHistory(h.dataset.hist);
+  const ht = e.target.closest('[data-htab]'); if(ht){ histTab = ht.dataset.htab; renderHistory(); }
+  const uw = e.target.closest('[data-unwish]');
+  if(uw){ const it = state.items.find(i=>i.id===uw.dataset.unwish); if(it){ it.wish = false; save(); renderHistory(); renderLists(); toast('Taken off your wish list.'); } }
+  const t = e.target.closest('[data-tab]'); if(t) showTab(t.dataset.tab);
+});
+[...document.querySelectorAll('dialog')].forEach(d => d.addEventListener('click', e => { if(e.target===d) d.close(); }));
+
+$('shakeBtn').onclick = () => {
+  const st=$('stage'); st.classList.remove('shaking'); void st.offsetWidth; st.classList.add('shaking');
+  if(!bodies.size){ toast('Nothing to shake yet.'); return; }
+  for(const b of bodies.values()){ b.vy -= 5 + Math.random()*7; b.vx += (Math.random()-.5)*10; b.av += (Math.random()-.5)*30; }
+  sfx.shake();
+  kick();
+};
+
+/* ---- add an urge ---- */
+$('catChips').innerHTML = Object.entries(CATS).map(([k,c],i)=>
+  `<label class="chip"><input type="radio" name="cat" value="${k}" ${i===0?'checked':''}><span>${art(k,c.icon)}${c.label}</span></label>`).join('');
+function syncWishUI(){ $('linkField').hidden = !$('fWish').checked; $('linkErr').hidden = true; $('linkField').classList.remove('invalid'); }
+$('fLink').addEventListener('input', () => { $('linkErr').hidden = true; $('linkField').classList.remove('invalid'); });
+$('fWish').addEventListener('change', () => { syncWishUI(); if($('fWish').checked) setTimeout(()=>$('fLink').focus(), 30); });
+function syncCur(){ const s = curSymbol(); $('curSym').textContent = s; $('fPrice').style.paddingLeft = (16 + s.length*9) + 'px'; }
+$('addBtn').onclick = () => {
+  $('addForm').reset(); addDur.reset(); syncWishUI(); syncCur(); $('durErr').hidden = true;
+  $('addDlg').showModal(); setTimeout(()=>$('fText').focus(), 50);
+};
+function cleanLink(v){
+  v = v.trim(); if(!v) return '';
+  if(!/^https?:\/\//i.test(v)) v = 'https://' + v;
+  try{ const u = new URL(v); return u.hostname.includes('.') ? u.href : ''; }catch(e){ return ''; }
+}
+$('addForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const text = $('fText').value.trim(); if(!text){ $('fText').focus(); return; }
+  const wish = $('fWish').checked;
+  const link = wish ? cleanLink($('fLink').value) : '';
+  if(wish && !link){ $('linkField').classList.add('invalid'); $('linkErr').hidden = false; $('fLink').focus(); return; }
+  const wait = addDur.get();
+  if(!wait){ $('durErr').hidden = false; return; }
+  const cat = document.querySelector('input[name=cat]:checked').value;
+  const p = parseFloat($('fPrice').value);
+  const now = Date.now();
+  const id = now.toString(36) + Math.random().toString(36).slice(2,7);
+  state.items.push({ id, text, cat, color: PALETTE[Math.floor(Math.random()*PALETTE.length)],
+    price: isFinite(p) && p>0 ? p : null, why: $('fWhy').value.trim(), created: now, due: now + wait, status:'waiting',
+    wish, link });
+  save(); $('addDlg').close();
+  setTimeout(()=>{ render(); toast(wish ? 'In the jar, and on your wish list.' : 'In the jar. Sweet dreams.'); }, 120);
+  if(wish && !state.me && !PREVIEW) profileSync().catch(()=>{});
+});
+
+/* ---- deciding ---- */
+let deciding = null;
+function openDecide(id){
+  const it = state.items.find(i=>i.id===id); if(!it) return;
+  deciding = id;
+  $('decFace').innerHTML = art(it.cat, it.color, it.wish);
+  $('decTitle').textContent = `“${it.text}” slept for ${fmtSlept(it.due-it.created)}. Still want it?`;
+  const bits = [];
+  if(it.wish) bits.push(`<p class="said"><b>This is on your wish list</b>Letting it go takes it off. Keeping it leaves it there for friends.</p>`);
+  if(it.why) bits.push(`<p class="said"><b>Back then you said</b>${esc(it.why)}</p>`);
+  if(it.price) bits.push(`<p class="said"><b>Letting it go keeps</b>${money(it.price)} in your pocket</p>`);
+  $('decSaid').innerHTML = bits.join('');
+  $('moreBox').hidden = true; $('snoozeBtn').hidden = false; moreDur.reset();
+  $('decideDlg').showModal();
+}
+function decide(status){
+  const it = state.items.find(i=>i.id===deciding); if(!it) return;
+  it.status = status; it.decidedAt = Date.now();
+  save(); $('decideDlg').close(); render();
+  if(status==='released'){ sfx.letGo(); toast(it.wish ? 'Let go, and taken off your wish list.' : it.price ? `Let go. ${money(it.price)} stays with you.` : 'Let go. A new firefly for the jar.'); }
+  else { sfx.keep(); toast(it.wish ? 'Kept. It stays on your wish list.' : 'Kept. Enjoy it, you really thought it through.'); }
+}
+$('letGoBtn').onclick = () => decide('released');
+$('keepBtn').onclick = () => decide('kept');
+$('snoozeBtn').onclick = () => { $('moreBox').hidden = false; $('snoozeBtn').hidden = true; };
+$('moreConfirm').onclick = () => {
+  const it = state.items.find(i=>i.id===deciding); if(!it) return;
+  const ms = moreDur.get(); if(!ms){ toast('Pick how long it should sleep.'); return; }
+  it.due = Date.now() + ms; save(); $('decideDlg').close(); render(); sfx.shh();
+  toast(`Back to sleep. It ${fmtLeft(ms)}.`);
+};
+
+/* ---- history ---- */
+let histTab = 'gone';
+function openHistory(tab){ histTab = tab; renderHistory(); $('histDlg').showModal(); }
+function renderHistory(){
+  document.querySelectorAll('[data-htab]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.htab===histTab)));
+  let list, empty, head = '';
+  if(histTab==='gone'){
+    list = state.items.filter(i=>i.status==='released').sort((a,b)=>b.decidedAt-a.decidedAt);
+    const saved = list.reduce((s,i)=>s+(Number(i.price)||0),0);
+    if(list.length) head = `<p class="sub">You've let go of ${list.length} thing${list.length>1?'s':''} and kept ${money(saved)} in your pocket.</p>`;
+    empty = "Nothing let go yet. Anything you let go turns into a firefly in your jar.";
+    list = list.map(it=>`<li class="card"><span class="mini">${art(it.cat,it.color)}</span><span class="txt"><span class="name">${esc(it.text)}</span><span class="meta">${fmtDate(it.decidedAt)}${it.price?`, ${money(it.price)} saved`:''}</span></span></li>`);
+  } else if(histTab==='kept'){
+    list = state.items.filter(i=>i.status==='kept').sort((a,b)=>b.decidedAt-a.decidedAt);
+    empty = "Nothing kept yet. Things you still want after sleeping on them show up here.";
+    list = list.map(it=>`<li class="card"><span class="mini awake">${art(it.cat,it.color,it.wish)}</span><span class="txt"><span class="name">${esc(it.text)}</span><span class="meta">${fmtDate(it.decidedAt)}${it.wish?', on your wish list':''}</span></span>${it.wish?`<button class="link" type="button" data-unwish="${it.id}">Take off wish list</button>`:''}</li>`);
+  } else {
+    list = state.items.filter(i=>i.status==='gifted').sort((a,b)=>b.giftedAt-a.giftedAt);
+    empty = "No gifts yet. Turn on “Make this a wish” when you add something, and friends can get it for you.";
+    list = list.map(it=>`<li class="card"><span class="mini awake">${giftArt(it.color)}</span><span class="txt"><span class="name">${esc(it.text)}</span><span class="meta">From an anonymous friend, ${fmtDate(it.giftedAt||Date.now())}</span></span></li>`);
+  }
+  $('histBody').innerHTML = head + (list.length ? `<ul>${list.join('')}</ul>` : `<p class="list-empty">${empty}</p>`);
+}
+
+/* ---- tabs ---- */
+function showTab(tab){
+  $('jarView').hidden = tab!=='jar'; $('friendsView').hidden = tab!=='friends';
+  document.querySelectorAll('[data-tab]').forEach(b => { if(b.dataset.tab===tab) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  window.scrollTo(0,0);
+  if(tab==='friends') openFriends();
+}
+
+/* ---- server helper ---- */
+async function api(path, body){
+  if(PREVIEW){ const e = new Error('preview'); e.preview = true; throw e; }
+  const r = await fetch('/api/' + path, body ? { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) } : {});
+  let data = null; try{ data = await r.json(); }catch(e){}
+  if(!r.ok){ const e = new Error('http'); e.status = r.status; e.data = data; throw e; }
+  return data;
+}
+
+/* ---- your profile: name, friend code and wishes ---- */
+let profTimer = null;
+function wishPayload(){
+  return state.items.filter(i => i.wish && ['waiting','kept','gifted'].includes(i.status))
+    .map(i => ({ id:i.id, text:i.text, link:i.link||'', cat:i.cat, color:i.color }));
+}
+function scheduleProfile(){ if(PREVIEW || !state.me) return; clearTimeout(profTimer); profTimer = setTimeout(() => profileSync().catch(()=>{}), 800); }
+async function profileSync(extra){
+  if(PREVIEW) return null;
+  if(!state.me){ state.me = { id: rid(12), secret: rid(24), code:'', name:'' }; saveLocal(); }
+  const body = Object.assign({ id: state.me.id, secret: state.me.secret, name: state.me.name || '', wishes: wishPayload() },
+    pushSub ? { endpoint: pushSub.endpoint } : {}, extra || {});
+  const res = await api('profile', body);
+  if(res && res.code) state.me.code = res.code;
+  saveLocal();
+  applyClaims((res && res.claims) || {});
+  return res;
+}
+function applyClaims(claims){
+  const newly = []; let changed = false;
+  for(const it of state.items){
+    if(!it.wish) continue;
+    const c = claims[it.id];
+    if(c && it.status!=='gifted' && it.status!=='released'){ it.prevStatus = it.status; it.status = 'gifted'; it.giftedAt = c.at || Date.now(); newly.push(it); }
+    else if(!c && it.status==='gifted'){ it.status = it.prevStatus || 'waiting'; delete it.giftedAt; changed = true; }
+  }
+  if(newly.length || changed){ saveLocal(); render(); }
+  if(newly.length){
+    sfx.gift();
+    toast(newly.length===1 ? `An anonymous friend is getting you “${newly[0].text}” 🎁` : `Friends are getting you ${newly.length} things from your wish list 🎁`);
+  }
+}
+function refreshClaims(){ if(!PREVIEW && state.me && !document.hidden && state.items.some(i=>i.wish)) profileSync().catch(()=>{}); }
+setInterval(refreshClaims, 90e3);
+document.addEventListener('visibilitychange', refreshClaims);
+
+/* ---- friends ---- */
+const friendCache = {};
+function normCode(s){ s = String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(s.startsWith('JAR')) s = s.slice(3); return s ? 'JAR-' + s : ''; }
+async function openFriends(){
+  if(PREVIEW){ $('friendsOff').hidden = false; $('friendsOn').hidden = true; return; }
+  $('friendsOff').hidden = true; $('friendsOn').hidden = false;
+  renderFriends();
+  try{
+    if(!state.me || !state.me.code) await profileSync();
+    renderFriends();
+  }catch(e){ $('myCode').textContent = 'Offline'; toast("Couldn't reach the server. Check your internet."); }
+  await Promise.all(state.friends.map(async f => {
+    try{ const d = await api('friend?code=' + encodeURIComponent(f.code)); friendCache[f.code] = d; if(d.name && d.name!==f.name){ f.name = d.name; saveLocal(); } }catch(e){ if(e.status===404) friendCache[f.code] = { missing:true }; }
+  }));
+  renderFriends();
+}
+function renderFriends(){
+  $('myCode').textContent = (state.me && state.me.code) || '…';
+  if(document.activeElement !== $('myName')) $('myName').value = (state.me && state.me.name) || '';
+  $('friendList').innerHTML = state.friends.length ? state.friends.map(f => {
+    const d = friendCache[f.code]; const n = d && d.wishes ? d.wishes.filter(w=>!w.claimed).length : null;
+    const col = PALETTE[hash(f.code)%PALETTE.length];
+    return `<button class="card friend" type="button" data-friend="${esc(f.code)}">
+      <span class="avatar" style="background:${col};color:${DARKS.has(col)?'#FFF7EC':'#2A2320'}">${esc((f.name||'?').trim().charAt(0).toUpperCase()||'?')}</span>
+      <span class="txt"><span class="name">${esc(f.name||'Your friend')}</span>
+      <span class="meta">${d && d.missing ? "This code doesn't work anymore" : n===null ? 'Tap to peek at their wish jar' : n ? `${n} wish${n>1?'es':''} to peek at` : 'No wishes right now'}</span></span>
+      <span class="chev" aria-hidden="true">›</span></button>`;
+  }).join('') : `<p class="list-empty">No friends yet. Swap friend codes with someone to peek into each other's wish jars.</p>`;
+}
+$('myName').addEventListener('change', () => {
+  if(!state.me) return; state.me.name = $('myName').value.trim().slice(0,30); save(); toast('Name saved.');
+});
+$('copyCode').onclick = async () => {
+  const c = state.me && state.me.code; if(!c) return;
+  try{ await navigator.clipboard.writeText(c); toast('Friend code copied.'); }catch(e){ toast(c); }
+};
+$('shareCode').onclick = async () => {
+  const c = state.me && state.me.code; if(!c) return;
+  const text = `Add me on Sleep On It so we can peek at each other's wish jars! My friend code is ${c}`;
+  if(navigator.share){ try{ await navigator.share({ title:'Sleep On It', text, url: location.origin + '/' }); }catch(e){} }
+  else { try{ await navigator.clipboard.writeText(text + ' ' + location.origin); toast('Invite copied.'); }catch(e){ toast(c); } }
+};
+$('addFriend').addEventListener('submit', async e => {
+  e.preventDefault();
+  const code = normCode($('friendCode').value);
+  if(!code){ toast('Type in your friend\'s code, like JAR-7K2PQ.'); return; }
+  if(state.me && code===state.me.code){ toast("That's your own code 😄"); return; }
+  if(state.friends.some(f=>f.code===code)){ toast("They're already your friend."); return; }
+  const btn = e.submitter || $('addFriend').querySelector('button'); btn.disabled = true;
+  try{
+    const d = await api('friend?code=' + encodeURIComponent(code));
+    state.friends.push({ code, name: d.name || 'Your friend' }); friendCache[code] = d; saveLocal();
+    $('friendCode').value = ''; renderFriends(); sfx.tap(); toast(`Added ${d.name || 'your friend'}!`);
+  }catch(err){ toast(err.status===404 ? "Couldn't find that code. Check it and try again." : "Couldn't reach the server. Check your internet."); }
+  btn.disabled = false;
+});
+
+let viewing = null;
+document.addEventListener('click', e => { const f = e.target.closest('[data-friend]'); if(f) openFriend(f.dataset.friend); });
+async function openFriend(code){
+  viewing = code;
+  const f = state.friends.find(x=>x.code===code);
+  $('fjTitle').textContent = `${(f && f.name) || 'Your friend'}'s wish jar`;
+  $('fjList').innerHTML = `<p class="list-empty">Peeking in…</p>`;
+  $('friendDlg').showModal();
+  try{ friendCache[code] = await api('friend?code=' + encodeURIComponent(code)); }
+  catch(e){ if(!friendCache[code] || friendCache[code].missing){ $('fjList').innerHTML = `<p class="list-empty">${e.status===404 ? "This friend code doesn't work anymore." : "Couldn't reach the server. Check your internet."}</p>`; return; } }
+  renderFriendJar();
+}
+function renderFriendJar(){
+  const code = viewing, d = friendCache[code]; if(!d || !d.wishes) return;
+  const wishes = d.wishes;
+  $('fjList').innerHTML = wishes.length ? `<ul>${wishes.map(w => {
+    const mine = state.myClaims[`${code}:${w.id}`];
+    const act = mine ? `<span class="claimed mine">You're getting this</span><button class="link" type="button" data-unclaim="${esc(w.id)}">Undo</button>`
+      : w.claimed ? `<span class="claimed">Already bought by a friend</span>`
+      : `<button class="small-btn sketch" type="button" data-claim="${esc(w.id)}">I'll get this</button>`;
+    return `<li class="card wish${w.claimed && !mine ? ' taken' : ''}">
+      <span class="mini">${w.claimed ? giftArt(w.color) : art(w.cat, w.color, true)}</span>
+      <span class="txt"><span class="name">${esc(w.text)}</span>
+      ${w.link ? `<a class="meta" href="${esc(w.link)}" target="_blank" rel="noopener">View on ${esc(hostOf(w.link) || 'the shop')}</a>` : ''}</span>
+      <span class="wish-actions">${act}</span></li>`;
+  }).join('')}</ul>` : `<p class="list-empty">No wishes in their jar right now.</p>`;
+}
+document.addEventListener('click', async e => {
+  const c = e.target.closest('[data-claim]');
+  if(c){
+    if(!c.dataset.confirm){ c.dataset.confirm = '1'; c.textContent = 'Tap to confirm'; setTimeout(()=>{ if(c.isConnected){ delete c.dataset.confirm; c.textContent = "I'll get this"; } }, 3000); return; }
+    c.disabled = true;
+    const token = rid(16), wishId = c.dataset.claim, code = viewing;
+    try{
+      await api('claim', { code, wishId, token });
+      state.myClaims[`${code}:${wishId}`] = token; saveLocal();
+      const w = friendCache[code].wishes.find(x=>x.id===wishId); if(w) w.claimed = true;
+      sfx.gift(); toast("It's yours to get. They won't know it was you 🤫");
+    }catch(err){
+      if(err.status===409){ const w = friendCache[code].wishes.find(x=>x.id===wishId); if(w) w.claimed = true; toast('Someone already got this one.'); }
+      else toast("Couldn't reach the server. Try again.");
+    }
+    renderFriendJar(); renderFriends();
+  }
+  const u = e.target.closest('[data-unclaim]');
+  if(u){
+    const wishId = u.dataset.unclaim, code = viewing, key = `${code}:${wishId}`, token = state.myClaims[key];
+    try{
+      await api('claim', { code, wishId, token, undo:true });
+      delete state.myClaims[key]; saveLocal();
+      const w = friendCache[code].wishes.find(x=>x.id===wishId); if(w) w.claimed = false;
+      toast("Undone. It's back on their list.");
+    }catch(err){ toast("Couldn't reach the server. Try again."); }
+    renderFriendJar(); renderFriends();
+  }
+});
+$('removeFriend').onclick = () => {
+  const f = state.friends.find(x=>x.code===viewing); if(!f) return;
+  if(!confirm(`Remove ${f.name || 'this friend'}? You can add them again with their code.`)) return;
+  state.friends = state.friends.filter(x=>x.code!==viewing); saveLocal(); $('friendDlg').close(); renderFriends();
+};
+
+/* ---- settings ---- */
+const curSym = c => { try{ return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).formatToParts(0).find(p=>p.type==='currency').value; }catch(e){ return c; } };
+const curOpts = CURRENCIES.map(([c,n])=>`<option value="${c}" title="${n}">${c} (${curSym(c)})</option>`).join('');
+$('setCur').innerHTML = curOpts; $('setCur').value = state.currency;
+$('setCur').addEventListener('change', () => { state.currency = $('setCur').value; save(); renderLists(); syncCur(); });
+$('settingsBtn').onclick = () => { refreshNotify(); $('setCur').value = state.currency; syncSound(); $('settingsDlg').showModal(); };
+$('resetBtn').onclick = () => {
+  if(confirm('Empty the jar and clear everything you let go, kept and got as gifts? Your friends and friend code stay.')){
+    state.items = []; save();
+    bodies.forEach(b=>b.el.remove()); bodies.clear(); flyEls.forEach(f=>f.remove()); flyEls.clear();
+    $('settingsDlg').close(); render(); toast('Fresh, empty jar.');
+  }
+};
+
+/* ---- wake-up notifications ---- */
+var pushSub = null, pushTimer = null;
+const pushOK = !PREVIEW && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function b64ToU8(str){ const pad = '='.repeat((4 - str.length % 4) % 4); const bin = atob((str + pad).replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(bin, c => c.charCodeAt(0)); }
+function schedulePush(){ if(!pushSub) return; clearTimeout(pushTimer); pushTimer = setTimeout(() => pushSync(), 600); }
+async function pushSync(remove){
+  if(!pushSub || PREVIEW) return;
+  const wakes = state.items.filter(i => i.status === 'waiting').map(i => ({ id: i.id, text: i.text, due: i.due }));
+  try{ await fetch('/api/sync', { method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
+    body: JSON.stringify({ subscription: pushSub.toJSON(), wakes, remove: !!remove }) }); }catch(e){}
+}
+function refreshNotify(){
+  let msg = '', btn = '', on = false;
+  if(PREVIEW) msg = 'Notifications work in the app on your phone.';
+  else if(isIOS && !standalone) msg = 'Add Sleep On It to your Home Screen first, then open it from there.';
+  else if(!pushOK) msg = "This browser can't do notifications.";
+  else if(Notification.permission === 'denied') msg = 'Blocked. Turn them on in your phone Settings, under Notifications.';
+  else if(pushSub && Notification.permission === 'granted'){ msg = "On. You'll get a nudge when something wakes or a friend gets you a gift."; btn = 'Turn off'; on = true; }
+  else { msg = 'Get a nudge when something wakes or a friend gets you a gift.'; btn = 'Turn on'; }
+  $('notifyMeta').textContent = msg;
+  $('notifyBtn').hidden = !btn; $('notifyBtn').textContent = btn; $('notifyBtn').classList.toggle('off', on);
+  $('nudge').hidden = !(pushOK && standalone && Notification.permission === 'default' && !pushSub && !state.notifyDismissed);
+}
+async function notifyOn(){
+  try{
+    const perm = await Notification.requestPermission();
+    if(perm !== 'granted'){ refreshNotify(); return; }
+    const r = await fetch('/api/vapid'); if(!r.ok) throw new Error('setup');
+    const { key } = await r.json();
+    const reg = await navigator.serviceWorker.ready;
+    const old = await reg.pushManager.getSubscription();
+    if(old){ try{ await old.unsubscribe(); }catch(e){} }
+    pushSub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey: b64ToU8(key) });
+    await pushSync();
+    if(state.me) profileSync().catch(()=>{});
+    toast("Notifications on 🔔");
+  }catch(e){ toast(e && e.message === 'setup' ? "Notifications aren't set up on the site yet." : "Couldn't turn on notifications. Try again."); }
+  refreshNotify();
+}
+async function notifyOff(){
+  try{ await pushSync(true); if(pushSub) await pushSub.unsubscribe(); }catch(e){}
+  pushSub = null; if(state.me) profileSync({ endpoint:'' }).catch(()=>{});
+  refreshNotify(); toast('Notifications off.');
+}
+$('notifyBtn').onclick = () => (pushSub ? notifyOff() : notifyOn());
+$('nudgeOn').onclick = () => notifyOn();
+$('nudgeLater').onclick = () => { state.notifyDismissed = true; saveLocal(); refreshNotify(); };
+
+/* ---- wake-up checks ---- */
+let readySig = '';
+const sig = () => state.items.filter(isReady).map(i=>i.id).join(',');
+setInterval(() => {
+  const s = sig();
+  if(s !== readySig){
+    const woke = s.length > readySig.length;
+    readySig = s; render();
+    if(woke){ sfx.wake(); toast('Something in the jar just woke up.'); }
+    return;
+  }
+  document.querySelectorAll('[data-left]').forEach(el => {
+    const it = state.items.find(i=>i.id===el.dataset.left);
+    if(it) el.textContent = fmtLeft(it.due - Date.now());
+  });
+}, 1000);
+
+/* ---- start ---- */
+saveLocal();
+syncSound();
+readySig = sig();
+render();
+refreshNotify();
+if(pushOK){
+  (async () => {
+    try{
+      const reg = await navigator.serviceWorker.ready;
+      pushSub = await reg.pushManager.getSubscription();
+      if(pushSub && Notification.permission === 'granted'){ pushSync(); if(state.me) profileSync().catch(()=>{}); }
+      else pushSub = null;
+    }catch(e){}
+    refreshNotify();
+  })();
+}
+if(state.me) refreshClaims();
+})();
+
+</script>
+<script>
+if('serviceWorker' in navigator){ window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+</script>
+</body>
+</html>
