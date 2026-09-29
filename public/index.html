@@ -669,50 +669,81 @@ function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('sho
 /* ---- physics ---- */
 const W=236, H=290, CR=42, G=0.42;
 const bodies = new Map();
-let running=false, calm=0, lastClink=0;
+let running=false, calm=0, lastClink=0, frames=0;
+const MAX_SPIN = 14;
+function wake(b){ b.sleep=false; b.rest=0; }
+function wakeAll(){ for(const b of bodies.values()) wake(b); }
 function constrain(b){
-  const r=b.r;
-  if(b.x<r){ b.x=r; if(b.vx<0) b.vx*=-0.3; }
-  if(b.x>W-r){ b.x=W-r; if(b.vx>0) b.vx*=-0.3; }
-  if(b.y>H-r){ b.y=H-r; if(b.vy>0){ if(b.vy>3) clink(b.vy); b.vy*=-0.22; } b.vx*=0.9; b.av = b.vx*3.5; }
+  const r=b.r; let touching=false;
+  if(b.x<r){ b.x=r; if(b.vx<0) b.vx*=-0.25; touching=true; }
+  if(b.x>W-r){ b.x=W-r; if(b.vx>0) b.vx*=-0.25; touching=true; }
+  if(b.y>H-r){ b.y=H-r; if(b.vy>0){ if(b.vy>3) clink(b.vy); b.vy*=-0.2; } touching=true; b.floor=true; }
   if(b.y>H-CR){
     const cx = b.x<CR ? CR : (b.x>W-CR ? W-CR : null);
     if(cx!==null){
       const cy=H-CR, dx=b.x-cx, dy=b.y-cy, d=Math.hypot(dx,dy), lim=CR-r;
-      if(d>lim && d>0){ const nx=dx/d, ny=dy/d; b.x=cx+nx*lim; b.y=cy+ny*lim; const vn=b.vx*nx+b.vy*ny; if(vn>0){ b.vx-=1.25*vn*nx; b.vy-=1.25*vn*ny; } }
+      if(d>lim && d>0){
+        const nx=dx/d, ny=dy/d; b.x=cx+nx*lim; b.y=cy+ny*lim;
+        const vn=b.vx*nx+b.vy*ny; if(vn>0){ b.vx-=1.1*vn*nx; b.vy-=1.1*vn*ny; }
+        touching=true; b.floor=true;
+      }
     }
   }
+  if(touching){ b.vx*=0.9; b.vy*=0.97; b.av*=0.8; }
 }
 function clink(v){ const now=performance.now(); if(now-lastClink>110){ lastClink=now; sfx.land(v); } }
 function step(){
   const arr=[...bodies.values()];
-  for(const b of arr){ b.vy+=G; b.vx*=0.995; b.vy*=0.995; b.x+=b.vx; b.y+=b.vy; b.a+=b.av; b.av*=0.94; }
+  for(const b of arr){
+    b.px=b.x; b.py=b.y; b.floor=false;
+    if(b.sleep) continue;
+    b.vy+=G; b.vx*=0.99; b.vy*=0.995; b.x+=b.vx; b.y+=b.vy;
+    b.av=Math.max(-MAX_SPIN, Math.min(MAX_SPIN, b.av)); b.a+=b.av; b.av*=0.9;
+  }
   for(let k=0;k<4;k++){
     for(let i=0;i<arr.length;i++) for(let j=i+1;j<arr.length;j++){
-      const a=arr[i], b=arr[j]; const dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy), min=a.r+b.r-5;
+      const a=arr[i], b=arr[j]; if(a.sleep && b.sleep) continue;
+      const dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy), min=a.r+b.r-5;
       if(d<min && d>0.001){
-        const nx=dx/d, ny=dy/d, ov=(min-d)/2;
-        a.x-=nx*ov; a.y-=ny*ov; b.x+=nx*ov; b.y+=ny*ov;
+        const nx=dx/d, ny=dy/d, ov=min-d;
         const rv=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;
-        if(rv<0){ const jj=-(1.15)*rv/2; a.vx-=jj*nx; a.vy-=jj*ny; b.vx+=jj*nx; b.vy+=jj*ny; if(-rv>3.5) clink(-rv); }
+        if(a.sleep && -rv>1.2) wake(a); if(b.sleep && -rv>1.2) wake(b);
+        const wa = a.sleep ? 0 : (b.sleep ? 1 : .5), wb = 1-wa;   // a resting piece acts like solid ground
+        a.x-=nx*ov*wa; a.y-=ny*ov*wa; b.x+=nx*ov*wb; b.y+=ny*ov*wb;
+        if(rv<0){
+          const jj=-(1.1)*rv;
+          if(!a.sleep){ a.vx-=jj*nx*wa; a.vy-=jj*ny*wa; } if(!b.sleep){ b.vx+=jj*nx*wb; b.vy+=jj*ny*wb; }
+          if(-rv>3.5) clink(-rv);
+        }
         const tx=-ny, ty=nx, rt=(b.vx-a.vx)*tx+(b.vy-a.vy)*ty;
-        a.av-=rt*0.6; b.av+=rt*0.6;
+        if(Math.abs(rt)>0.5){ if(!a.sleep) a.av-=rt*0.3; if(!b.sleep) b.av+=rt*0.3; }
+        if(!a.sleep) a.vx*=0.985; if(!b.sleep) b.vx*=0.985;
       }
     }
-    for(const b of arr) constrain(b);
+    for(const b of arr) if(!b.sleep) constrain(b);
   }
-  return arr.reduce((m,b)=>Math.max(m, Math.abs(b.vx)+Math.abs(b.vy)), 0);
+  let m=0;
+  for(const b of arr){
+    if(b.sleep) continue;
+    if(b.floor && Math.abs(b.vx)>0.6) b.av += (b.vx*2.4 - b.av)*0.3;
+    const moved=Math.abs(b.x-b.px)+Math.abs(b.y-b.py)+Math.abs(b.av)*0.2;
+    if(moved<0.35){ b.vx*=0.7; b.av*=0.5; }
+    b.rest = moved<0.25 ? (b.rest||0)+1 : 0;
+    if(b.rest>30){ b.sleep=true; b.vx=0; b.vy=0; b.av=0; }   // settled: stop completely
+    m=Math.max(m,moved);
+  }
+  return m;
 }
+
 function paint(){ for(const b of bodies.values()) b.el.style.transform = `translate(${(b.x-38).toFixed(1)}px, ${(b.y-38).toFixed(1)}px) rotate(${b.a.toFixed(1)}deg)`; }
 function kick(){
-  if(reduce){ const s=state.sound; state.sound=false; for(let i=0;i<600;i++) step(); state.sound=s; paint(); return; }
-  calm=0; if(!running){ running=true; requestAnimationFrame(loop); }
+  wakeAll(); frames=0;
+  if(reduce){ const snd=state.sound; state.sound=false; for(let i=0;i<900;i++){ step(); if([...bodies.values()].every(b=>b.sleep)) break; } state.sound=snd; paint(); return; }
+  if(!running){ running=true; requestAnimationFrame(loop); }
 }
 function loop(){
-  const e = Math.max(step(), step());
-  paint();
-  calm = e<0.15 ? calm+1 : 0;
-  if(calm>45){ running=false; return; }
+  step(); step(); paint(); frames++;
+  if(frames>900 || [...bodies.values()].every(b=>b.sleep)){ running=false; return; }   // everything has settled, stop moving
   requestAnimationFrame(loop);
 }
 
@@ -881,6 +912,7 @@ document.addEventListener('click', e => {
 $('shakeBtn').onclick = () => {
   const st=$('stage'); st.classList.remove('shaking'); void st.offsetWidth; st.classList.add('shaking');
   if(!bodies.size){ toast('Nothing to shake yet.'); return; }
+  wakeAll();
   for(const b of bodies.values()){ b.vy -= 5 + Math.random()*7; b.vx += (Math.random()-.5)*10; b.av += (Math.random()-.5)*30; }
   sfx.shake();
   kick();
