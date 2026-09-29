@@ -22,3 +22,19 @@ export function normCode(s) {
   if (c.startsWith('JAR')) c = c.slice(3);
   return c ? 'JAR-' + c : '';
 }
+
+// Strong consistency so a read always sees the latest write (no stale copies).
+import { getStore } from '@netlify/blobs';
+export const friendsStore = () => getStore({ name: 'friends', consistency: 'strong' });
+export const pushStore = () => getStore({ name: 'sleep-on-it', consistency: 'strong' });
+
+// Claims and fans are kept in their own records, so saving your wishes can never erase them.
+export async function getClaims(store, id, p) {
+  const own = (await store.get('cl:' + id, { type: 'json' })) || {};
+  return Object.assign({}, (p && p.claims) || {}, own);
+}
+export async function getFans(store, id, p) {
+  const own = (await store.get('f:' + id, { type: 'json' })) || [];
+  const all = [...((p && p.fans) || []), ...own];
+  const seen = new Set(); return all.filter(f => f && f.code && !seen.has(f.code) && seen.add(f.code));
+}

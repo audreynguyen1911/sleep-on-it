@@ -1,13 +1,13 @@
 // Runs every 2 minutes: finds anything that has just woken up and sends a notification.
 import webpush from 'web-push';
-import { getStore } from '@netlify/blobs';
+import { pushStore } from '../lib/util.mjs';
 
 export default async () => {
   const pub = process.env.VAPID_PUBLIC_KEY, priv = process.env.VAPID_PRIVATE_KEY;
   if (!pub || !priv) { console.log('Notification keys are missing, skipping.'); return; }
   webpush.setVapidDetails(process.env.VAPID_SUBJECT || 'mailto:sleep-on-it@example.com', pub, priv);
 
-  const store = getStore('sleep-on-it');
+  const store = pushStore();
   const now = Date.now();
   const { blobs } = await store.list();
 

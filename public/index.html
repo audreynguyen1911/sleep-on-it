@@ -242,7 +242,7 @@ input[type=url]{width:100%;font:inherit;color:var(--ink);background:var(--paper)
 .custom-dur input{width:96px;flex:none}
 .custom-dur select{max-width:none;flex:1}
 .set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-top:1.5px dashed color-mix(in srgb, var(--line) 30%, transparent)}
-.set-row:first-of-type{border-top:0;padding-top:4px}
+.dlg-head + .set-row{border-top:0;padding-top:4px}
 .set-row .lbl{min-width:0}
 .set-row .lbl b{display:block;font-weight:600}
 .set-row small{display:block;color:var(--soft);font-size:.82rem;line-height:1.35}
@@ -389,7 +389,7 @@ a.meta{color:var(--cobalt);text-decoration:underline}
   </main>
 
   <main id="friendsView" hidden>
-    <p class="intro">Friends can peek at your wishes and secretly get one for you. You'll never find out who.</p>
+    <p class="intro">Only one of you needs to add a code. Then you can both peek at each other's wishes and secretly get one for each other.</p>
     <div id="friendsOff" hidden class="block"><p class="list-empty">Friends work in the Sleep On It app on your phone.</p></div>
     <div id="friendsOn">
       <section class="block">
@@ -1011,6 +1011,7 @@ async function profileSync(extra){
   if(res && res.code) state.me.code = res.code;
   saveLocal();
   applyClaims((res && res.claims) || {});
+  mergeFans((res && res.fans) || []);
   return res;
 }
 function applyClaims(claims){
@@ -1027,8 +1028,27 @@ function applyClaims(claims){
     toast(newly.length===1 ? `An anonymous friend is getting you “${newly[0].text}” 🎁` : `Friends are getting you ${newly.length} things from your wish list 🎁`);
   }
 }
-function refreshClaims(){ if(!PREVIEW && state.me && !document.hidden && state.items.some(i=>i.wish)) profileSync().catch(()=>{}); }
-setInterval(refreshClaims, 90e3);
+function refreshClaims(){ if(!PREVIEW && state.me && !document.hidden) profileSync().catch(()=>{}); }
+function mergeFans(fans){
+  state.removedFriends = state.removedFriends || [];
+  const newly = [];
+  for(const f of fans){
+    if(!f || !f.code || (state.me && f.code===state.me.code)) continue;
+    const have = state.friends.find(x=>x.code===f.code);
+    if(have){ if(f.name && have.name!==f.name){ have.name = f.name; } continue; }
+    if(state.removedFriends.includes(f.code)) continue;
+    state.friends.push({ code:f.code, name:f.name || 'Your friend', linked:true }); newly.push(f);
+  }
+  saveLocal();
+  if(newly.length){
+    if(!$('friendsView').hidden) renderFriends();
+    sfx.tap();
+    toast(newly.length===1 ? `${newly[0].name || 'Someone'} added you as a friend 💛` : `${newly.length} friends added you 💛`);
+  }
+}
+setInterval(refreshClaims, 20e3);
+if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if(e.data && e.data.type==='refresh') refreshClaims(); });
+window.addEventListener('focus', refreshClaims);
 document.addEventListener('visibilitychange', refreshClaims);
 
 /* ---- friends ---- */
@@ -1043,6 +1063,7 @@ async function openFriends(){
     renderFriends();
   }catch(e){ $('myCode').textContent = 'Offline'; toast("Couldn't reach the server. Check your internet."); }
   await Promise.all(state.friends.map(async f => {
+    if(!f.linked && state.me && state.me.code){ try{ await api('connect', { id: state.me.id, secret: state.me.secret, code: f.code, quiet:true }); f.linked = true; saveLocal(); }catch(e){} }
     try{ const d = await api('friend?code=' + encodeURIComponent(f.code)); friendCache[f.code] = d; if(d.name && d.name!==f.name){ f.name = d.name; saveLocal(); } }catch(e){ if(e.status===404) friendCache[f.code] = { missing:true }; }
   }));
   renderFriends();
@@ -1058,7 +1079,7 @@ function renderFriends(){
       <span class="txt"><span class="name">${esc(f.name||'Your friend')}</span>
       <span class="meta">${d && d.missing ? "This code doesn't work anymore" : n===null ? 'Tap to peek at their wish jar' : n ? `${n} wish${n>1?'es':''} to peek at` : 'No wishes right now'}</span></span>
       <span class="chev" aria-hidden="true">›</span></button>`;
-  }).join('') : `<p class="list-empty">No friends yet. Swap friend codes with someone to peek into each other's wish jars.</p>`;
+  }).join('') : `<p class="list-empty">No friends yet. Share your code, or type in a friend's. Only one of you needs to.</p>`;
 }
 $('myName').addEventListener('change', () => {
   if(!state.me) return; state.me.name = $('myName').value.trim().slice(0,30); save(); toast('Name saved.');
@@ -1081,8 +1102,10 @@ $('addFriend').addEventListener('submit', async e => {
   if(state.friends.some(f=>f.code===code)){ toast("They're already your friend."); return; }
   const btn = e.submitter || $('addFriend').querySelector('button'); btn.disabled = true;
   try{
-    const d = await api('friend?code=' + encodeURIComponent(code));
-    state.friends.push({ code, name: d.name || 'Your friend' }); friendCache[code] = d; saveLocal();
+    if(!state.me || !state.me.code) await profileSync();
+    const d = await api('connect', { id: state.me.id, secret: state.me.secret, code });
+    state.removedFriends = (state.removedFriends || []).filter(c => c!==code);
+    state.friends.push({ code, name: d.name || 'Your friend', linked:true }); friendCache[code] = d; saveLocal();
     $('friendCode').value = ''; renderFriends(); sfx.tap(); toast(`Added ${d.name || 'your friend'}!`);
   }catch(err){ toast(err.status===404 ? "Couldn't find that code. Check it and try again." : "Couldn't reach the server. Check your internet."); }
   btn.disabled = false;
@@ -1146,7 +1169,8 @@ document.addEventListener('click', async e => {
 });
 $('removeFriend').onclick = () => {
   const f = state.friends.find(x=>x.code===viewing); if(!f) return;
-  if(!confirm(`Remove ${f.name || 'this friend'}? You can add them again with their code.`)) return;
+  if(!confirm(`Remove ${f.name || 'this friend'} from your list? You can add them again with their code.`)) return;
+  state.removedFriends = (state.removedFriends || []).concat(viewing);
   state.friends = state.friends.filter(x=>x.code!==viewing); saveLocal(); $('friendDlg').close(); renderFriends();
 };
 

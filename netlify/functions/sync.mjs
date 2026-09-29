@@ -1,5 +1,5 @@
 // The app sends its notification address and what's asleep in the jar, so the server knows when to ping.
-import { getStore } from '@netlify/blobs';
+import { pushStore } from '../lib/util.mjs';
 
 async function keyFor(endpoint) {
   const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(endpoint));
@@ -13,7 +13,7 @@ export default async (req) => {
   const sub = body && body.subscription;
   if (!sub || typeof sub.endpoint !== 'string' || !sub.keys) return new Response('Missing subscription', { status: 400 });
 
-  const store = getStore('sleep-on-it');
+  const store = pushStore();
   const key = await keyFor(sub.endpoint);
   if (body.remove) { await store.delete(key); return Response.json({ ok: true }); }
 

@@ -1,5 +1,5 @@
 // Sleep On It: offline support and wake-up notifications
-const CACHE = 'sleep-on-it-v10';
+const CACHE = 'sleep-on-it-v13';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -24,6 +24,7 @@ self.addEventListener('fetch', e => {
 self.addEventListener('push', e => {
   let data = {};
   try { data = e.data ? e.data.json() : {}; } catch (err) { data = { body: e.data && e.data.text() }; }
+  if (data.refresh) self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => list.forEach(c => c.postMessage({ type: 'refresh' })));
   e.waitUntil(self.registration.showNotification(data.title || 'Something woke up in your jar', {
     body: data.body || 'Still want it?',
     icon: 'icons/icon-192.png',

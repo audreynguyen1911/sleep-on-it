@@ -1,6 +1,5 @@
 // A friend marks a wish as "I'll get this" (or undoes it). The owner gets a notification but never learns who.
-import { getStore } from '@netlify/blobs';
-import { sha, bad, normCode } from '../lib/util.mjs';
+import { sha, bad, normCode, friendsStore, getClaims } from '../lib/util.mjs';
 import { pushTo } from '../lib/push.mjs';
 
 export default async (req) => {
@@ -9,26 +8,26 @@ export default async (req) => {
   const code = normCode(body.code), wishId = String(body.wishId || ''), token = String(body.token || '');
   if (!code || !wishId || token.length < 16 || token.length > 80) return bad('Missing details');
 
-  const store = getStore('friends');
+  const store = friendsStore();
   const id = await store.get('c:' + code);
   const p = id && await store.get('p:' + id, { type: 'json' });
   if (!p) return bad('Not found', 404);
   const wish = (p.wishes || []).find(w => w.id === wishId);
   if (!wish) return bad('Not found', 404);
-  p.claims = p.claims || {};
-  const tokenHash = await sha(token);
 
+  const claims = await getClaims(store, id, p);
+  const tokenHash = await sha(token);
   if (body.undo) {
-    if (p.claims[wishId] && p.claims[wishId].tokenHash === tokenHash) {
-      delete p.claims[wishId];
-      await store.setJSON('p:' + id, p);
+    if (claims[wishId] && claims[wishId].tokenHash === tokenHash) {
+      delete claims[wishId];
+      await store.setJSON('cl:' + id, claims);
     }
     return Response.json({ ok: true });
   }
-  if (p.claims[wishId]) return bad('Already claimed', 409);
-  p.claims[wishId] = { at: Date.now(), tokenHash };
-  await store.setJSON('p:' + id, p);
-  await pushTo(p.subKey, { title: 'Someone got you something ✨', body: `An anonymous friend is getting you “${wish.text}”.` });
+  if (claims[wishId]) return bad('Already claimed', 409);
+  claims[wishId] = { at: Date.now(), tokenHash };
+  await store.setJSON('cl:' + id, claims);
+  await pushTo(p.subKey, { title: 'Someone got you something ✨', body: `An anonymous friend is getting you “${wish.text}”.`, refresh: true });
   return Response.json({ ok: true });
 };
 export const config = { path: '/api/claim' };
